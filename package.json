@@ -1,0 +1,28 @@
+{
+  "name": "learn-philosophy",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start"
+  },
+  "dependencies": {
+    "@solidjs/router": "^0.14.1",
+    "@solidjs/start": "^1.0.10",
+    "clsx": "^2.1.1",
+    "solid-js": "^1.9.3",
+    "vinxi": "^0.5.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.5",
+    "vite": "^6.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
