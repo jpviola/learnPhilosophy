@@ -41,6 +41,7 @@ export function GraphPanel(props: GraphPanelProps) {
   let canvasRef: HTMLCanvasElement | undefined;
   let animFrameId: number;
   let simNodes: GraphNode[] = [];
+  let ctx: CanvasRenderingContext2D | null = null;
 
   const [hoveredNode, setHoveredNode] = createSignal<string | null>(null);
   const [dimensions, setDimensions] = createSignal({ w: 400, h: 360 });
@@ -95,7 +96,6 @@ export function GraphPanel(props: GraphPanelProps) {
         if (!other) continue;
         const dx = other.x - node.x;
         const dy = other.y - node.y;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
         const strength = (edge.strength ?? 0.5) * 0.04;
         node.vx += dx * strength;
         node.vy += dy * strength;
@@ -120,20 +120,8 @@ export function GraphPanel(props: GraphPanelProps) {
   }
 
   function draw() {
-    const canvas = canvasRef;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
     if (!ctx) return;
     const { w, h } = dimensions();
-
-    // HiDPI
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    canvas.style.width = `${w}px`;
-    canvas.style.height = `${h}px`;
-    ctx.scale(dpr, dpr);
-
     ctx.clearRect(0, 0, w, h);
 
     // Draw edges
@@ -231,6 +219,7 @@ export function GraphPanel(props: GraphPanelProps) {
 
   let dragNode: GraphNode | null = null;
   let dragOffset = { x: 0, y: 0 };
+  let hasDragged = false;
 
   function handleMouseMove(e: MouseEvent) {
     if (dragNode) {
@@ -239,6 +228,7 @@ export function GraphPanel(props: GraphPanelProps) {
       dragNode.y = e.clientY - rect.top - dragOffset.y;
       dragNode.vx = 0;
       dragNode.vy = 0;
+      hasDragged = true;
     }
     const hit = getNodeAt(e.clientX, e.clientY);
     setHoveredNode(hit?.id ?? null);
@@ -251,6 +241,7 @@ export function GraphPanel(props: GraphPanelProps) {
     const hit = getNodeAt(e.clientX, e.clientY);
     if (hit) {
       dragNode = hit;
+      hasDragged = false;
       const rect = canvasRef!.getBoundingClientRect();
       dragOffset = {
         x: e.clientX - rect.left - hit.x,
@@ -259,19 +250,15 @@ export function GraphPanel(props: GraphPanelProps) {
     }
   }
 
-  function handleMouseUp(e: MouseEvent) {
+  function handleMouseUp(_e: MouseEvent) {
     const wasDragging = dragNode;
     dragNode = null;
     if (canvasRef) canvasRef.style.cursor = "grab";
 
-    // Click (not drag) → navigate
-    if (wasDragging) {
-      const hit = getNodeAt(e.clientX, e.clientY);
-      if (hit && hit !== wasDragging) return;
-      if (hit && hit.id !== props.centerNodeId) {
-        const slug = hit.id.toLowerCase().replace(/\s+/g, "-");
-        navigate(`/topic/${slug}`);
-      }
+    // Only navigate on a clean click (no drag movement)
+    if (wasDragging && !hasDragged && wasDragging.id !== props.centerNodeId) {
+      const slug = wasDragging.id.toLowerCase().replace(/\s+/g, "-");
+      navigate(`/topic/${slug}`);
     }
   }
 
@@ -279,7 +266,16 @@ export function GraphPanel(props: GraphPanelProps) {
     const resize = () => {
       if (!canvasRef) return;
       const parent = canvasRef.parentElement!;
-      setDimensions({ w: parent.clientWidth, h: parent.clientHeight });
+      const newW = parent.clientWidth;
+      const newH = parent.clientHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvasRef.width = newW * dpr;
+      canvasRef.height = newH * dpr;
+      canvasRef.style.width = `${newW}px`;
+      canvasRef.style.height = `${newH}px`;
+      if (!ctx) ctx = canvasRef.getContext("2d");
+      if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      setDimensions({ w: newW, h: newH });
       initNodes();
     };
 

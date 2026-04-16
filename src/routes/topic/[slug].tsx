@@ -27,8 +27,8 @@ function markdownToHtml(md: string): string {
     .replace(/^- (.+)$/gm, "<li>$1</li>")
     // Blockquote
     .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>")
-    // Wrap consecutive <li> in <ul>
-    .replace(/(<li>[\s\S]+?<\/li>)(\n(?!<li>)|$)/g, "<ul>$1</ul>$2")
+    // Wrap consecutive <li> groups in a single <ul>
+    .replace(/(?:<li>[^\n]*<\/li>\n?)+/g, (match) => `<ul>${match}</ul>`)
     // Paragraphs (blank-line-separated blocks that aren't headings/lists)
     .split(/\n\n+/)
     .map((block) => {

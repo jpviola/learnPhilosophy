@@ -145,7 +145,9 @@ body {
   list-style: disc;
   padding-left: 1.5rem;
   color: var(--color-muted);
-  space-y: 0.25rem;
+}
+.prose-content li {
+  margin-bottom: 0.25rem;
 }
 
 /* ── Search suggestion list ──────────────────────────────── */
