@@ -8,37 +8,7 @@ import { TopicCard } from "~/components/TopicCard";
 import { Button } from "~/components/Button";
 import { getTopicBySlug, ALL_TOPICS, type Resource } from "~/lib/topics";
 import { getContentBySlug } from "~/lib/content";
-
-// ── Lightweight markdown → HTML (headings, bold, lists, paragraphs) ──
-function markdownToHtml(md: string): string {
-  return md
-    // Strip frontmatter if somehow present
-    .replace(/^---[\s\S]*?---\n/, "")
-    // h2 / h3
-    .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-    .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-    // Italic
-    .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    // Inline code
-    .replace(/`(.+?)`/g, "<code>$1</code>")
-    // Unordered list items
-    .replace(/^- (.+)$/gm, "<li>$1</li>")
-    // Blockquote
-    .replace(/^> (.+)$/gm, "<blockquote>$1</blockquote>")
-    // Wrap consecutive <li> groups in a single <ul>
-    .replace(/(?:<li>[^\n]*<\/li>\n?)+/g, (match) => `<ul>${match}</ul>`)
-    // Paragraphs (blank-line-separated blocks that aren't headings/lists)
-    .split(/\n\n+/)
-    .map((block) => {
-      const b = block.trim();
-      if (!b) return "";
-      if (/^<(h[23]|ul|li|blockquote)/.test(b)) return b;
-      return `<p>${b.replace(/\n/g, " ")}</p>`;
-    })
-    .join("\n");
-}
+import { renderMarkdown } from "~/lib/markdown";
 
 // Lazy-load the heavy graph panel
 const GraphPanel = lazy(() =>
@@ -244,7 +214,7 @@ export default function TopicPage() {
                         {(body) => (
                           <div
                             class="prose-content text-brand-muted leading-relaxed mb-6 max-w-2xl"
-                            innerHTML={markdownToHtml(body())}
+                            innerHTML={renderMarkdown(body())}
                           />
                         )}
                       </Show>
