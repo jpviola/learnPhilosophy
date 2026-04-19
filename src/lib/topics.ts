@@ -1,3 +1,5 @@
+import { getAllContent, type TopicContent } from "~/lib/content";
+
 // ── Types ──────────────────────────────────────────────────
 
 export interface Resource {
@@ -38,9 +40,9 @@ export interface Topic {
   edges: TopicEdge[];
 }
 
-// ── Mock Data ──────────────────────────────────────────────
+// ── Seed Data (8 fully-structured topics) ─────────────────
 
-export const ALL_TOPICS: Topic[] = [
+const SEED_TOPICS: Topic[] = [
   {
     id: "stoicism",
     slug: "stoicism",
@@ -526,6 +528,7 @@ export const CATEGORIES = [
   "Core Philosophy",
   "Modern Philosophy",
   "Applied Philosophy",
+  "Philosophy",
 ];
 
 // ── Featured topic slugs for landing page ─────────────────
@@ -539,6 +542,35 @@ export const FEATURED_SLUGS = [
   "metaphysics",
   "political-philosophy",
   "philosophy-of-mind",
+];
+
+// ── Content-derived topics ─────────────────────────────────
+
+function topicFromContent(content: TopicContent): Topic {
+  return {
+    id: content.slug,
+    slug: content.slug,
+    name: content.meta.name,
+    tagline: content.meta.tagline,
+    description: content.meta.tagline || content.meta.name,
+    resourceCount: content.meta.resourceCount ?? 0,
+    learnerCount: content.meta.learnerCount ?? 0,
+    category: content.meta.category || "Philosophy",
+    tags: content.meta.tags ?? [],
+    color: content.meta.color,
+    resources: [],
+    relatedNodes: [],
+    edges: [],
+  };
+}
+
+const SEED_SLUGS = new Set(SEED_TOPICS.map((t) => t.slug));
+
+export const ALL_TOPICS: Topic[] = [
+  ...SEED_TOPICS,
+  ...getAllContent()
+    .filter((c) => !SEED_SLUGS.has(c.slug))
+    .map(topicFromContent),
 ];
 
 // ── Lookup helpers ─────────────────────────────────────────
