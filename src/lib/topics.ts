@@ -546,7 +546,33 @@ export const FEATURED_SLUGS = [
 
 // ── Content-derived topics ─────────────────────────────────
 
-function topicFromContent(content: TopicContent): Topic {
+function slugToLabel(slug: string): string {
+  return slug
+    .split("-")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+function topicFromContent(
+  content: TopicContent,
+  nameMap: Map<string, string>
+): Topic {
+  const related = content.meta.relatedTopics ?? [];
+
+  const relatedNodes: TopicNode[] = [
+    { id: content.slug, label: content.meta.name, weight: 3 },
+    ...related.map((slug) => ({
+      id: slug,
+      label: nameMap.get(slug) ?? slugToLabel(slug),
+      weight: 1,
+    })),
+  ];
+
+  const edges: TopicEdge[] = related.map((slug) => ({
+    source: content.slug,
+    target: slug,
+  }));
+
   return {
     id: content.slug,
     slug: content.slug,
@@ -559,18 +585,24 @@ function topicFromContent(content: TopicContent): Topic {
     tags: content.meta.tags ?? [],
     color: content.meta.color,
     resources: [],
-    relatedNodes: [],
-    edges: [],
+    relatedNodes,
+    edges,
   };
 }
 
 const SEED_SLUGS = new Set(SEED_TOPICS.map((t) => t.slug));
 
+// Build a slug→name map from all content so relatedNodes get real labels
+const allContent = getAllContent().filter((c) => !SEED_SLUGS.has(c.slug));
+const contentNameMap = new Map<string, string>(
+  allContent.map((c) => [c.slug, c.meta.name])
+);
+// Also include seed topics in the name map
+for (const t of SEED_TOPICS) contentNameMap.set(t.slug, t.name);
+
 export const ALL_TOPICS: Topic[] = [
   ...SEED_TOPICS,
-  ...getAllContent()
-    .filter((c) => !SEED_SLUGS.has(c.slug))
-    .map(topicFromContent),
+  ...allContent.map((c) => topicFromContent(c, contentNameMap)),
 ];
 
 // ── Lookup helpers ─────────────────────────────────────────
