@@ -9,7 +9,7 @@ tags:
   - biología
 relatedTopics:
   - de-anima
-  - potencia-del-alma
+  - potencias-del-alma
 ---
 
 # **Nutrición y crecimiento**
