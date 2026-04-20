@@ -1,3 +1,17 @@
+---
+id: austin
+name: John Langshaw Austin
+tagline: El pionero de los actos performativos
+category: Philosophy of Language
+color: "#EC4899"
+tags:
+  - lenguaje ordinario
+  - pragmática
+relatedTopics:
+  - searle
+  - argumentacion
+---
+
 # Austin
 
 **Austin, John Langshaw**
@@ -14,8 +28,8 @@ Austin es conocido por su teoría de los actos performativos, que sostiene que c
 
 **Obras Fundamentales**
 
-*   "How to Do Things with Words" (1955) - En este libro, Austin desarrolla su teoría de los actos performativos.
-*   "Philosophical Papers" (1961) - Publicado póstumamente, este libro recopila algunos de sus trabajos más importantes.
+- "How to Do Things with Words" (1955) - En este libro, Austin desarrolla su teoría de los actos performativos.
+- "Philosophical Papers" (1961) - Publicado póstumamente, este libro recopila algunos de sus trabajos más importantes.
 
 **Influencias Recibidas y Ejercidas**
 
@@ -33,10 +47,11 @@ En resumen, Austin es un filósofo británico cuya teoría de los actos performa
 
 **Referencias**
 
-*   Austin, J. L. (1955). How to Do Things with Words.
-*   Austin, J. L. (1961). Philosophical Papers.
-*   Searle, J. R. (1969). Speech Acts: An Essay in the Philosophy of Language.
-*   [[Pragma-dialéctica]]
+- Austin, J. L. (1955). How to Do Things with Words.
+- Austin, J. L. (1961). Philosophical Papers.
+- Searle, J. R. (1969). Speech Acts: An Essay in the Philosophy of Language.
+- [[Pragma-dialéctica]]
 
 ---
-*Fuente: [[Argumentación, comunicación y falacias Una perspectiva pragma-dialéctica]]* #filosofo
+
+_Fuente: [[Argumentación, comunicación y falacias Una perspectiva pragma-dialéctica]]_ #filosofo

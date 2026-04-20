@@ -8,6 +8,7 @@ import { TopicCard } from "~/components/TopicCard";
 import { Button } from "~/components/Button";
 import { getTopicBySlug, ALL_TOPICS, type Resource } from "~/lib/topics";
 import { getContentBySlug } from "~/lib/content";
+import { AskPanel } from "~/components/AskPanel";
 import { renderMarkdown } from "~/lib/markdown";
 
 // Lazy-load the heavy graph panel
@@ -417,6 +418,9 @@ export default function TopicPage() {
                   </div>
                 </Container>
               </section>
+
+              {/* ── Ask AI ──────────────────────────────────────── */}
+              <AskPanel topic={t()} />
 
               {/* ── Related Topics ──────────────────────────────── */}
               <Show when={relatedTopics().length > 0}>

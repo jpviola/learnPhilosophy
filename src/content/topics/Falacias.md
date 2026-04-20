@@ -1,7 +1,21 @@
+---
+id: falacias-general
+name: Falacias (General)
+tagline: Errores comunes en la comunicación y el debate
+category: Logic
+color: "#8B5CF6"
+tags:
+  - retórica
+  - debate
+relatedTopics:
+  - falacia-logica
+  - argumentacion
+  - pragma-dialectica
+---
+
 # Falacias
 
-**Falacias**
-================
+# **Falacias**
 
 Las falacias son una categoría de errores lógicos que se producen en la argumentación y la comunicación. Son un tema central en el campo de la argumentación, comunicación y falacias: Una perspectiva pragma-dialéctica.
 
@@ -27,15 +41,16 @@ Algunos críticos han argumentado que la teoría de las falacias es demasiado re
 
 ### Ejemplos concretos
 
-*   La argumentación "Todos los perros son felinos, y mi amigo tiene un perro, por lo tanto su perro es felino" contiene una falacia lógica, ya que confunde la categoría de "perros" con la de "felinos".
-*   El razonamiento "El gobierno está corrupto, por lo tanto debemos derrocarlo" es un ejemplo de falacia en el contenido, ya que no se proporciona evidencia para apoyar la afirmación de corrupción.
+- La argumentación "Todos los perros son felinos, y mi amigo tiene un perro, por lo tanto su perro es felino" contiene una falacia lógica, ya que confunde la categoría de "perros" con la de "felinos".
+- El razonamiento "El gobierno está corrupto, por lo tanto debemos derrocarlo" es un ejemplo de falacia en el contenido, ya que no se proporciona evidencia para apoyar la afirmación de corrupción.
 
 ### Véase también
 
-*   [[Argumentación, comunicación y falacias: Una perspectiva pragma-dialéctica]]
-*   [[Pragma-dialéctica]]
-*   [[Argumentación]]
-*   [[Comunicación]]
+- [[Argumentación, comunicación y falacias: Una perspectiva pragma-dialéctica]]
+- [[Pragma-dialéctica]]
+- [[Argumentación]]
+- [[Comunicación]]
 
 ---
-*Fuente: [[Argumentación, comunicación y falacias Una perspectiva pragma-dialéctica]]* #concepto
+
+_Fuente: [[Argumentación, comunicación y falacias Una perspectiva pragma-dialéctica]]_ #concepto

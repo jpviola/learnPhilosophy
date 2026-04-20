@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(where node *)",
+      "Bash(where npm *)",
+      "Bash(cmd /c \"where node & where npm & node --version & npm --version\")",
+      "Bash(xargs grep *)",
+      "Bash(node -e \"const m = require\\('marked'\\); console.log\\(Object.keys\\(m\\)\\)\")",
+      "Bash(git add *)",
+      "Bash(git rebase *)",
+      "Bash(GIT_EDITOR=true git rebase --continue)"
+    ]
+  }
+}

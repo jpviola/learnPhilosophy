@@ -1,3 +1,17 @@
+---
+id: razon-y-fe
+name: Razón y Fe
+tagline: El gran debate de la armonía intelectual medieval
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - epistemología
+  - teología
+relatedTopics:
+  - santo-tomas-de-aquino
+  - san-anselmo
+  - neoplatonismo
+---
 # Razón y fe
 
 **Razón y Fe**

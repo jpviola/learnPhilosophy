@@ -1,7 +1,21 @@
+---
+id: por-las-rutas-medievales-del-saber
+name: Por las rutas medievales del saber
+tagline: Exploración de la filosofía de los siglos XII y XIII
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - historia
+  - neoplatonismo
+relatedTopics:
+  - san-anselmo
+  - universales
+  - razon-y-fe
+---
+
 # Por las rutas medievales del saber
 
-**Por las rutas medievales del saber**
-==============================
+# **Por las rutas medievales del saber**
 
 **Resumen**
 
@@ -25,14 +39,15 @@ La obra "Por las rutas medievales del saber" tiene una importancia filosófica s
 
 **Véase también**
 
-* [[Neoplatonismo]]
-* [[Universales]]
-* [[Razón y fe]]
-* [[Sistematización teológica]]
-* [[Literatura religiosa medieval en Centroeuropa]]
-* [[Aristóteles]]
-* [[San Anselmo]]
-* [[Tomás de Aquino]]
+- [[Neoplatonismo]]
+- [[Universales]]
+- [[Razón y fe]]
+- [[Sistematización teológica]]
+- [[Literatura religiosa medieval en Centroeuropa]]
+- [[Aristóteles]]
+- [[San Anselmo]]
+- [[Tomás de Aquino]]
 
 ---
-*Fuente: [[Por las rutas medievales del saber]]* #libro
+
+_Fuente: [[Por las rutas medievales del saber]]_ #libro

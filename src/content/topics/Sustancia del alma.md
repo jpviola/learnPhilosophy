@@ -1,4 +1,20 @@
+---
+id: sustancia-del-alma
+name: Sustancia del Alma
+tagline: La naturaleza inmaterial y eterna según el aristotelismo
+category: Ancient Philosophy
+color: "#4F46E5"
+tags:
+  - aristóteles
+  - psicología
+relatedTopics:
+  - de-anima
+  - nutricion-y-crecimiento
+  - potencias-del-alma
+---
+
 # Sustancia del Alma
+
 ======================
 
 El concepto de "Sustancia del Alma" es un concepto filosófico central en la obra de Aristóteles, específicamente en su tratado "De Anima". En este texto, Aristóteles explora la naturaleza y función del alma, llegando a la conclusión de que el alma es una sustancia separada del cuerpo.
@@ -31,25 +47,26 @@ La teoría de la Sustancia del Alma ha sido objeto de críticas y objeciones. Al
 
 La Sustancia del Alma se puede observar en la forma en que el alma interactúa con el cuerpo. Por ejemplo:
 
-*   La capacidad de pensar y razonar es una función del alma.
-*   La capacidad de sentir emociones y experiencias también es una función del alma.
+- La capacidad de pensar y razonar es una función del alma.
+- La capacidad de sentir emociones y experiencias también es una función del alma.
 
 ## Relación con Otros Conceptos
 
 La Sustancia del Alma está relacionada con otros conceptos filosóficos, como:
 
-*   [[Potencias del alma]]: Las potencias del alma son las capacidades o facultades que permiten al alma realizar sus funciones.
-*   [[Nutrición y crecimiento]]: La nutrición y el crecimiento son procesos que involucran a la sustancia del alma, ya que requieren la participación de la energía vital del cuerpo.
-*   [[La naturaleza del alma]]: La naturaleza del alma es un tema central en la filosofía aristotélica, y la Sustancia del Alma es una parte importante de esta discusión.
-*   [[La relación entre el alma y el cuerpo]]: La relación entre el alma y el cuerpo es un tema fundamental en la filosofía de Aristóteles, y la Sustancia del Alma juega un papel crucial en esta relación.
+- [[Potencias del alma]]: Las potencias del alma son las capacidades o facultades que permiten al alma realizar sus funciones.
+- [[Nutrición y crecimiento]]: La nutrición y el crecimiento son procesos que involucran a la sustancia del alma, ya que requieren la participación de la energía vital del cuerpo.
+- [[La naturaleza del alma]]: La naturaleza del alma es un tema central en la filosofía aristotélica, y la Sustancia del Alma es una parte importante de esta discusión.
+- [[La relación entre el alma y el cuerpo]]: La relación entre el alma y el cuerpo es un tema fundamental en la filosofía de Aristóteles, y la Sustancia del Alma juega un papel crucial en esta relación.
 
 ## Referencias
 
 Para más información sobre este concepto, se recomienda consultar:
 
-*   [[De Anima]]: El tratado de Aristóteles que explora la naturaleza y función del alma.
-*   [[Platón]]: El filósofo griego que influyó en la teoría aristotélica del alma.
-*   [[Demócrito]]: El filósofo griego que rechazó la idea de una sustancia inmaterial.
+- [[De Anima]]: El tratado de Aristóteles que explora la naturaleza y función del alma.
+- [[Platón]]: El filósofo griego que influyó en la teoría aristotélica del alma.
+- [[Demócrito]]: El filósofo griego que rechazó la idea de una sustancia inmaterial.
 
 ---
-*Fuente: [[De Anima]]* #concepto
+
+_Fuente: [[De Anima]]_ #concepto

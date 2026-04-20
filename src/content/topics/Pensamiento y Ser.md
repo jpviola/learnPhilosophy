@@ -1,4 +1,16 @@
-# Pensamiento y Ser
+---
+id: pensamiento-y-ser
+name: Pensamiento y Ser
+tagline: La relación dialéctica entre la mente y la realidad divina
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - metafísica
+  - tomismo
+relatedTopics:
+  - santo-tomas-de-aquino
+  - esencia-de-dios
+---
 
 **Pensamiento y Ser**
 =====================

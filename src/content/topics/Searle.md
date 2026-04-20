@@ -1,7 +1,22 @@
+---
+id: searle
+name: John Searle
+tagline: Teoría de los actos de habla e intencionalidad
+category: Philosophy of Language
+color: "#EC4899"
+tags:
+  - actos de habla
+  - mente
+  - pragmática
+relatedTopics:
+  - argumentacion-comunicacion-y-falacias-una-perspectiva-pragma-dialectica
+  - comunicacion
+  - austin
+---
+
 # Searle
 
-**John R. Searle**
-================
+# **John R. Searle**
 
 ### Vida y Época
 
@@ -15,8 +30,8 @@ También es conocido por su crítica al behaviorismo y la idea de que los seres 
 
 ### Obras Fundamentales
 
-*   "Speech Acts: An Essay in the Philosophy of Language" (1969)
-*   "The Construction of Social Reality" (1995)
+- "Speech Acts: An Essay in the Philosophy of Language" (1969)
+- "The Construction of Social Reality" (1995)
 
 ### Influencias Recibidas y Ejercidas
 
@@ -31,4 +46,5 @@ En este sentido, Searle puede verse como un precursor de la Pragma-dialéctica, 
 Por lo tanto, la obra de Searle sigue siendo relevante para entender las complejidades de la argumentación y la comunicación.
 
 ---
-*Fuente: [[Argumentación, comunicación y falacias Una perspectiva pragma-dialéctica]]* #filosofo
+
+_Fuente: [[Argumentación, comunicación y falacias Una perspectiva pragma-dialéctica]]_ #filosofo

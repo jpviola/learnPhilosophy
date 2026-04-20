@@ -1,7 +1,21 @@
+---
+id: democrito
+name: Demócrito
+tagline: El padre del atomismo materialista
+category: Ancient Philosophy
+color: "#4F46E5"
+tags:
+  - presocráticos
+  - materialismo
+relatedTopics:
+  - de-anima
+  - platon
+  - aristoteles
+---
+
 # Demócrito
 
-**Demócrito**
-================
+# **Demócrito**
 
 ### Vida y Época
 
@@ -29,13 +43,14 @@ En "De Anima", [[Aristóteles]] critica las ideas de Demócrito sobre la natural
 
 ### Véase también
 
-* [[De Anima]]
-* [[Platón]]
-* [[Sustancia del alma]]
-* [[Potencias del alma]]
-* [[Nutrición y crecimiento]]
-* [[La naturaleza del alma]]
-* [[La relación entre el alma y el cuerpo]]
+- [[De Anima]]
+- [[Platón]]
+- [[Sustancia del alma]]
+- [[Potencias del alma]]
+- [[Nutrición y crecimiento]]
+- [[La naturaleza del alma]]
+- [[La relación entre el alma y el cuerpo]]
 
 ---
-*Fuente: [[De Anima]]* #filosofo
+
+_Fuente: [[De Anima]]_ #filosofo

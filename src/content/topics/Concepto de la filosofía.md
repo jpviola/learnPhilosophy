@@ -1,6 +1,18 @@
-# Concepto de la filosofía
+---
+id: concepto-filosofia-fundamentos
+name: Concepto de la Filosofía (Fundamentos)
+tagline: La comprensión del saber filosófico en sí mismo
+category: Core Philosophy
+color: "#14B8A6"
+tags:
+  - epistemología
+  - fundamentos
+relatedTopics:
+  - introduccion-a-la-filosofia
+  - definicion-real
+  - definicion-nominal
+---
 
-**Concepto de la Filosofía**
 ==========================
 
 La pregunta por el concepto de la filosofía es una cuestión fundamental en la disciplina misma. En este sentido, [[Fundamentos de Filosofía]] nos ofrece un punto de partida para explorar esta idea.
@@ -35,14 +47,15 @@ El concepto de la filosofía está estrechamente relacionado con otros conceptos
 
 ### Referencias
 
-* [[Fundamentos de Filosofía]]
-* [[Platón]]
-* [[Aristóteles]]
-* [[Kant]]
-* [[Definición nominal]]
-* [[Definición real]]
-* [[Introducción a la filosofía]]
-* [[El concepto de la filosofía]]
+- [[Fundamentos de Filosofía]]
+- [[Platón]]
+- [[Aristóteles]]
+- [[Kant]]
+- [[Definición nominal]]
+- [[Definición real]]
+- [[Introducción a la filosofía]]
+- [[El concepto de la filosofía]]
 
 ---
-*Fuente: [[Fundamentos de Filosofía]]* #concepto
+
+_Fuente: [[Fundamentos de Filosofía]]_ #concepto
