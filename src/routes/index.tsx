@@ -2,6 +2,7 @@ import { createSignal, createMemo, For, Show, onMount, onCleanup } from "solid-j
 import { useNavigate } from "@solidjs/router";
 import clsx from "clsx";
 import { searchTopics, ALL_TOPICS } from "~/lib/topics";
+import { buildPalace } from "~/lib/palace";
 import { LandingGraph, NodeTooltip, RippleOverlay, type HoverInfo } from "~/components/LandingGraph";
 
 // ── Search ───────────────────────────────────────────────────
@@ -119,6 +120,9 @@ export default function HomePage() {
 
   const [hoverInfo, setHoverInfo] = createSignal<HoverInfo | null>(null);
   const [ripple, setRipple] = createSignal<{ cx: number; cy: number } | null>(null);
+  const [showPalace, setShowPalace] = createSignal(false);
+
+  const palace = createMemo(() => buildPalace());
 
   onMount(() => {
     document.title = "LearnPhilosophy — I want to learn";
@@ -197,6 +201,66 @@ export default function HomePage() {
 
       <Show when={ripple()}>
         {(r) => <RippleOverlay cx={r().cx} cy={r().cy} />}
+      </Show>
+
+      {/* Palace Explorer Toggle */}
+      <div class="absolute bottom-6 left-6 z-20">
+        <button
+          onClick={() => setShowPalace(!showPalace())}
+          class={clsx(
+            "px-4 py-2 rounded-full border text-xs font-mono transition-all duration-300",
+            "backdrop-blur-md flex items-center gap-2",
+            showPalace() 
+              ? "bg-emerald-500/20 border-emerald-500 text-emerald-400" 
+              : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"
+          )}
+        >
+          <span class="text-lg">🏰</span>
+          {showPalace() ? "CLOSE PALACE" : "EXPLORE PALACE"}
+        </button>
+      </div>
+
+      {/* Palace Overlay */}
+      <Show when={showPalace()}>
+        <div class="absolute inset-0 z-10 bg-black/60 backdrop-blur-xl animate-fade-in flex items-center justify-center p-8">
+          <div class="w-full max-w-5xl h-full max-h-[80vh] overflow-y-auto custom-scrollbar pr-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <For each={palace().wings}>
+                {(wing) => (
+                  <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-3">
+                      <span class="w-1.5 h-6 bg-emerald-500 rounded-full" />
+                      {wing.name}
+                    </h2>
+                    <div class="space-y-6 pl-4 border-l border-white/5">
+                      <For each={wing.rooms}>
+                        {(room) => (
+                          <div class="space-y-2">
+                            <h3 class="text-xs font-mono text-white/30 uppercase tracking-widest">
+                              {room.name}
+                            </h3>
+                            <div class="flex flex-wrap gap-2">
+                              <For each={room.drawers}>
+                                {(drawer) => (
+                                  <button
+                                    onClick={() => navigate(`/topic/${drawer.topic.slug}`)}
+                                    class="text-sm text-white/60 hover:text-emerald-400 transition-colors bg-white/5 px-2.5 py-1 rounded-md border border-white/5 hover:border-emerald-500/30"
+                                  >
+                                    {drawer.name}
+                                  </button>
+                                )}
+                              </For>
+                            </div>
+                          </div>
+                        )}
+                      </For>
+                    </div>
+                  </div>
+                )}
+              </For>
+            </div>
+          </div>
+        </div>
       </Show>
     </div>
   );

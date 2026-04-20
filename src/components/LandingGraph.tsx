@@ -2,6 +2,7 @@ import { createMemo, Show, onMount, onCleanup } from "solid-js";
 import { isServer } from "solid-js/web";
 import clsx from "clsx";
 import { ALL_TOPICS, getTopicBySlug } from "~/lib/topics";
+import { getTopicColor } from "~/lib/palace";
 import { tickNodes, nodeAt, LANDING_OPTS, type SimNode, type SimEdge } from "~/lib/graph/sim";
 
 export interface HoverInfo {
@@ -37,7 +38,7 @@ function buildGraph(): { nodes: SimNode[]; edges: SimEdge[] } {
       vy: 0,
       r: topic.isPrimary ? 7 : 4.5,
       isPrimary: topic.isPrimary ?? false,
-      color: topic.color ?? topicColors[topic.id] ?? "#34d399",
+      color: getTopicColor(topic),
     });
   }
 
