@@ -1,5 +1,6 @@
-import { createMemo, lazy, Show, For, Suspense, createSignal, createEffect } from "solid-js";
+import { createMemo, Show, For, Suspense, createSignal, createEffect } from "solid-js";
 import { useParams, A } from "@solidjs/router";
+import { clientOnly } from "@solidjs/start";
 import clsx from "clsx";
 import { Container } from "~/components/Container";
 import { SearchBar } from "~/components/SearchBar";
@@ -11,8 +12,8 @@ import { getContentBySlug } from "~/lib/content";
 import { AskPanel } from "~/components/AskPanel";
 import { renderMarkdown } from "~/lib/markdown";
 
-// Lazy-load the heavy graph panel
-const GraphPanel = lazy(() =>
+// Client-only: canvas doesn't render on the server to avoid hydration issues
+const GraphPanel = clientOnly(() =>
   import("~/components/GraphPanel").then((m) => ({ default: m.GraphPanel }))
 );
 

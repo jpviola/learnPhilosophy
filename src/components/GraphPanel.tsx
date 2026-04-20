@@ -126,20 +126,23 @@ export function GraphPanel(props: GraphPanelProps) {
     const resize = () => {
       if (!canvasRef) return;
       const p = canvasRef.parentElement!;
+      const w = p.clientWidth || p.getBoundingClientRect().width;
+      const h = p.clientHeight || p.getBoundingClientRect().height;
+      if (!w || !h) { requestAnimationFrame(resize); return; }
       const dpr = window.devicePixelRatio || 1;
-      canvasRef.width = p.clientWidth * dpr;
-      canvasRef.height = p.clientHeight * dpr;
-      canvasRef.style.width = `${p.clientWidth}px`;
-      canvasRef.style.height = `${p.clientHeight}px`;
+      canvasRef.width = w * dpr;
+      canvasRef.height = h * dpr;
+      canvasRef.style.width = `${w}px`;
+      canvasRef.style.height = `${h}px`;
       if (!ctx) ctx = canvasRef.getContext("2d");
       ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
-      setDims({ w: p.clientWidth, h: p.clientHeight });
+      setDims({ w, h });
       initNodes();
     };
 
     const ro = new ResizeObserver(resize);
     if (canvasRef?.parentElement) ro.observe(canvasRef.parentElement);
-    resize();
+    requestAnimationFrame(resize);
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       draw();
