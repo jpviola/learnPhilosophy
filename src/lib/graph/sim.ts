@@ -33,9 +33,9 @@ export const PANEL_OPTS: TickOptions = {
 };
 
 export const LANDING_OPTS: TickOptions = {
-  repulsion: 1800, primaryBoost: 2.2,
-  springStrength: 0.022, idealLength: 130,
-  gravity: 0.004, damping: 0.78, padding: 64,
+  repulsion: 800, primaryBoost: 1.5,
+  springStrength: 0.015, idealLength: 100,
+  gravity: 0.006, damping: 0.75, padding: 64,
 };
 
 export function tickNodes(
@@ -88,6 +88,10 @@ export function tickNodes(
     node.y += node.vy;
     node.x = Math.max(opts.padding, Math.min(w - opts.padding, node.x));
     node.y = Math.max(opts.padding, Math.min(h - opts.padding, node.y));
+    if (isNaN(node.x) || isNaN(node.y)) {
+      node.x = cx;
+      node.y = cy;
+    }
   }
 }
 

@@ -122,6 +122,7 @@ export default function HomePage() {
 
   onMount(() => {
     document.title = "LearnPhilosophy — I want to learn";
+    console.log('CLIENT: ALL_TOPICS length:', ALL_TOPICS.length);
   });
 
   function handleNavigate(slug: string, cx: number, cy: number) {

@@ -1,6 +1,19 @@
+---
+id: monoteismo
+name: Monoteísmo
+tagline: La creencia en la unicidad y singularidad de Dios
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - teología
+  - religiones abrahámicas
+relatedTopics:
+  - agustin-de-hipona
+  - el-paso-al-monoteismo
+---
+
 # Monoteísmo
 
-**Monoteísmo**
 ================
 
 ### Definición
@@ -27,22 +40,23 @@ El monoteísmo ha sido objeto de críticas y debates filosóficos. Algunos argum
 
 El monoteísmo se manifiesta en diversas formas en las religiones abrahámicas:
 
-*   En el judaísmo, el concepto de Dios es central y se enfatiza su unicidad.
-*   El cristianismo desarrolló la teología trinitaria para describir a Dios como una sola entidad en tres personas.
-*   El islam sostiene que Alá es un solo dios, considerado como el creador y gobernante del universo.
+- En el judaísmo, el concepto de Dios es central y se enfatiza su unicidad.
+- El cristianismo desarrolló la teología trinitaria para describir a Dios como una sola entidad en tres personas.
+- El islam sostiene que Alá es un solo dios, considerado como el creador y gobernante del universo.
 
 ### Relación con otras ideas
 
 El monoteísmo está relacionado con otros conceptos filosóficos y religiosos:
 
-*   La [[Iconografía]] de Dios se refiere a la representación artística o simbólica de Dios, lo que puede variar según la tradición religiosa.
-*   El [[La concepción de Dios en el Occidente medieval]] es un tema complejo que aborda la comprensión de Dios en la Edad Media europea.
-*   El [[El paso al monoteísmo]] describe el proceso histórico por el cual las sociedades pasaron del politeísmo al monoteísmo.
+- La [[Iconografía]] de Dios se refiere a la representación artística o simbólica de Dios, lo que puede variar según la tradición religiosa.
+- El [[La concepción de Dios en el Occidente medieval]] es un tema complejo que aborda la comprensión de Dios en la Edad Media europea.
+- El [[El paso al monoteísmo]] describe el proceso histórico por el cual las sociedades pasaron del politeísmo al monoteísmo.
 
 ### Bibliografía
 
-*   [[El Dios de la Edad Media]], una obra que analiza la comprensión de Dios en la Edad Media europea.
-*   [[Aristóteles]], un filósofo griego cuyas ideas influyeron en el desarrollo del monoteísmo.
+- [[El Dios de la Edad Media]], una obra que analiza la comprensión de Dios en la Edad Media europea.
+- [[Aristóteles]], un filósofo griego cuyas ideas influyeron en el desarrollo del monoteísmo.
 
 ---
-*Fuente: [[El Dios de la Edad Media]]* #concepto
+
+_Fuente: [[El Dios de la Edad Media]]_ #concepto

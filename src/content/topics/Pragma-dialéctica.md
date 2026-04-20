@@ -1,3 +1,17 @@
+---
+id: pragma-dialectica
+name: Pragma-dialéctica
+tagline: Resolución de conflictos a través del diálogo crítico
+category: Philosophy of Language
+color: "#EC4899"
+tags:
+  - argumentación
+  - dialéctica
+relatedTopics:
+  - argumentacion
+  - austin
+  - searle
+---
 # Pragma-dialéctica
 
 **Pragma-dialéctica**

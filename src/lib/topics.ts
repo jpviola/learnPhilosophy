@@ -1,3 +1,4 @@
+import { cache, createAsync } from "@solidjs/router";
 import { getAllContent, type TopicContent } from "~/lib/content";
 
 // ── Types ──────────────────────────────────────────────────
@@ -35,6 +36,7 @@ export interface Topic {
   category: string;
   tags: string[];
   color?: string; // accent color hex
+  isPrimary?: boolean;
   resources: Resource[];
   relatedNodes: TopicNode[];
   edges: TopicEdge[];
@@ -55,6 +57,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Ancient Philosophy",
     tags: ["virtue", "ethics", "mindfulness", "ancient greece"],
     color: "#2DD4BF",
+    isPrimary: true,
     resources: [
       {
         id: "med",
@@ -140,6 +143,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Core Philosophy",
     tags: ["knowledge", "belief", "justification", "skepticism"],
     color: "#8B5CF6",
+    isPrimary: true,
     resources: [
       {
         id: "theaetetus",
@@ -206,6 +210,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Core Philosophy",
     tags: ["morality", "virtue", "consequentialism", "deontology"],
     color: "#F59E0B",
+    isPrimary: true,
     resources: [
       {
         id: "nicomachean",
@@ -272,6 +277,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Modern Philosophy",
     tags: ["freedom", "authenticity", "absurdism", "consciousness"],
     color: "#EC4899",
+    isPrimary: true,
     resources: [
       {
         id: "being-nothingness",
@@ -337,6 +343,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Core Philosophy",
     tags: ["reasoning", "argumentation", "formal systems", "proof"],
     color: "#3B82F6",
+    isPrimary: true,
     resources: [
       {
         id: "organon",
@@ -385,6 +392,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Core Philosophy",
     tags: ["reality", "existence", "consciousness", "ontology"],
     color: "#6366F1",
+    isPrimary: true,
     resources: [
       {
         id: "metaphysics-aristotle",
@@ -426,6 +434,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Applied Philosophy",
     tags: ["justice", "democracy", "rights", "social contract"],
     color: "#10B981",
+    isPrimary: true,
     resources: [
       {
         id: "republic",
@@ -489,6 +498,7 @@ const SEED_TOPICS: Topic[] = [
     category: "Core Philosophy",
     tags: ["consciousness", "qualia", "dualism", "functionalism"],
     color: "#F97316",
+    isPrimary: true,
     resources: [
       {
         id: "what-is-it-like",
@@ -584,6 +594,7 @@ function topicFromContent(
     category: content.meta.category || "Philosophy",
     tags: content.meta.tags ?? [],
     color: content.meta.color,
+    isPrimary: false,
     resources: [],
     relatedNodes,
     edges,

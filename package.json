@@ -15,6 +15,7 @@
     "gray-matter": "^4.0.3",
     "isomorphic-dompurify": "^3.9.0",
     "marked": "^5.1.1",
+    "mermaid": "^11.14.0",
     "solid-js": "^1.9.3",
     "vinxi": "^0.5.7"
   },

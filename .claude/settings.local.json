@@ -9,7 +9,18 @@
       "Bash(node -e \"const m = require\\('marked'\\); console.log\\(Object.keys\\(m\\)\\)\")",
       "Bash(git add *)",
       "Bash(git rebase *)",
-      "Bash(GIT_EDITOR=true git rebase --continue)"
+      "Bash(GIT_EDITOR=true git rebase --continue)",
+      "Bash(git push *)",
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s http://localhost:3003/topic/ciencia-de-la-logica)",
+      "Bash(curl -s http://localhost:3003/topic/stoicism)",
+      "Bash(node --input-type=module)",
+      "Bash(2>&1)",
+      "Bash(curl -s \"http://localhost:3003/_build/@fs/C:/Users/juan_/Desktop/learnPhylosophy/src/entry-client.tsx\")",
+      "Bash(curl -s \"http://localhost:3003/_build/@fs/C:/Users/juan_/Desktop/learnPhylosophy/src/components/GraphPanel.tsx\")",
+      "Bash(grep -o \".\\\\{0,300\\\\}clientHeight.\\\\{0,300\\\\}\")",
+      "Bash(grep -o 'getNextElement.\\\\{0,200\\\\}\\\\|_$use.\\\\{0,200\\\\}')",
+      "Bash(node -e \"const pkg = require\\('./node_modules/@solidjs/start/package.json'\\); console.log\\(Object.keys\\(pkg.exports || {}\\).join\\('\\\\n'\\)\\)\")"
     ]
   }
 }

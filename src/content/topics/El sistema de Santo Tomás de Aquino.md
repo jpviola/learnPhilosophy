@@ -1,3 +1,17 @@
+---
+id: el-sistema-de-santo-tomas-de-aquino
+name: El Sistema de Santo Tomás
+tagline: La síntesis definitiva entre aristotelismo y cristianismo
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - escolástica
+  - tomismo
+relatedTopics:
+  - santo-tomas-de-aquino
+  - pensamiento-y-ser
+  - existencia-de-dios
+---
 # El sistema de Santo Tomás de Aquino
 
 **El sistema de Santo Tomás de Aquino**

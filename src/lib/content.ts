@@ -1,5 +1,3 @@
-import matter from "gray-matter";
-
 // ── Types ─────────────────────────────────────────────────────
 
 export interface TopicMeta {
@@ -24,7 +22,7 @@ export interface TopicContent {
 // ── Vite glob import ──────────────────────────────────────────
 
 // @ts-ignore — Vite provides import.meta.glob at runtime
-const RAW_FILES: Record<string, string> = (import.meta as any).glob(
+const RAW_FILES: any = (import.meta as any).glob(
   "../content/topics/*.md",
   { eager: true, query: "?raw", import: "default" }
 );
@@ -43,6 +41,50 @@ export function toSlug(name: string): string {
 
 // ── Build content map ─────────────────────────────────────────
 
+// Simple frontmatter parser to avoid gray-matter Node dependencies in browser
+function parseFrontmatter(raw: string): { data: any; content: string } {
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
+  if (!match) return { data: {}, content: raw };
+
+  const yaml = match[1];
+  const content = match[2];
+  const data: any = {};
+
+  let currentKey: string | null = null;
+  yaml.split("\n").forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+
+    if (trimmed.startsWith("- ")) {
+      if (currentKey) {
+        if (!Array.isArray(data[currentKey])) data[currentKey] = [];
+        data[currentKey].push(trimmed.slice(2).replace(/^["']|["']$/g, ""));
+      }
+    } else {
+      const [key, ...val] = trimmed.split(":");
+      if (key && val.length > 0) {
+        currentKey = key.trim();
+        let value = val.join(":").trim();
+        if (value.startsWith("[") && value.endsWith("]")) {
+          data[currentKey] = value
+            .slice(1, -1)
+            .split(",")
+            .map((s) => s.trim().replace(/^["']|["']$/g, ""));
+          currentKey = null;
+        } else if (value === "") {
+          // Multiline list coming up?
+          data[currentKey] = [];
+        } else {
+          data[currentKey] = value.replace(/^["']|["']$/g, "");
+          currentKey = null;
+        }
+      }
+    }
+  });
+
+  return { data, content };
+}
+
 function buildContentMap(): Map<string, TopicContent> {
   const map = new Map<string, TopicContent>();
 
@@ -51,7 +93,7 @@ function buildContentMap(): Map<string, TopicContent> {
     if (filename.startsWith("_")) continue; // skip _template.md etc.
     const rawName = filename.replace(/\.md$/, "");
 
-    const { data, content: body } = matter(raw);
+    const { data, content: body } = parseFrontmatter(raw);
 
     // Use frontmatter id as slug when available (already URL-safe); otherwise slugify filename
     const slug = data.id ? String(data.id) : toSlug(rawName);
