@@ -154,13 +154,13 @@ export function GraphPanel(props: GraphPanelProps) {
 
   return (
     <div class={clsx(
-      "relative w-full h-full min-h-[320px] rounded-xl overflow-hidden",
+      "relative w-full min-h-[320px] rounded-xl overflow-hidden",
       "bg-gradient-to-br from-brand-bg to-white border border-brand-border",
       props.class
     )}>
       <canvas
         ref={canvasRef}
-        class="graph-canvas w-full h-full"
+        class="graph-canvas absolute inset-0 w-full h-full"
         aria-label="Topic relationship graph — drag nodes to explore"
         onMouseMove={onMouseMove}
         onMouseDown={onMouseDown}
