@@ -68,13 +68,14 @@ body {
 .chat-bar-input {
   width: 100%;
   background-color: var(--color-surface);
-  border: 2px solid var(--color-primary); /* Fixed brand border */
+  border: 2px solid var(--color-primary); /* Borde fijo con el color de la marca */
   color: var(--color-text);
   border-radius: var(--radius-pill);
   padding: 12px 24px;
   padding-right: 48px;
   font-size: 1rem;
   transition: all var(--transition-normal);
+  backdrop-filter: blur(8px);
   box-shadow: var(--shadow-card);
 }
 
@@ -86,8 +87,9 @@ body {
 
 /* Estilo cuando estás escribiendo: desaparece el borde brusco y entra el brillo */
 .chat-bar-input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.15), var(--shadow-card-hover);
+  outline: none;
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 25px rgba(45, 212, 191, 0.2), var(--shadow-card-hover);
   transform: translateY(-1px);
 }
 
