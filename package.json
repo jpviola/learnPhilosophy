@@ -17,7 +17,8 @@
     "marked": "^5.1.1",
     "mermaid": "^11.14.0",
     "solid-js": "^1.9.3",
-    "vinxi": "^0.5.7"
+    "vinxi": "^0.5.7",
+    "openai": "^4.98.0"
   },
   "devDependencies": {
     "@types/dompurify": "^2.3.3",

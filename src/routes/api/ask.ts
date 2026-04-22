@@ -1,5 +1,6 @@
 import type { APIEvent } from "@solidjs/start/server";
 import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 
 // ── Types ────────────────────────────────────────────────────
 
@@ -77,6 +78,50 @@ async function callOpenSpace(
   });
 }
 
+// ── Nebius Token Factory streaming (OpenAI-compatible) ───────
+// Uses any model available on Nebius (DeepSeek, Llama, Qwen…).
+// Significantly cheaper than hosted frontier models for
+// educational workloads. Swap NEBIUS_MODEL to try different ones.
+
+async function callNebius(
+  apiKey: string,
+  req: AskRequest
+): Promise<ReadableStream<Uint8Array>> {
+  const client = new OpenAI({
+    baseURL: "https://api.tokenfactory.nebius.com/v1/",
+    apiKey,
+  });
+
+  const model = process.env.NEBIUS_MODEL ?? "deepseek-ai/DeepSeek-R1-0528";
+  const encoder = new TextEncoder();
+
+  const stream = await client.chat.completions.create({
+    model,
+    max_tokens: 1024,
+    stream: true,
+    messages: [
+      { role: "system", content: buildSystemPrompt(req) },
+      { role: "user", content: req.question },
+    ],
+  });
+
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        for await (const chunk of stream) {
+          const text = chunk.choices[0]?.delta?.content ?? "";
+          if (text) controller.enqueue(encoder.encode(text));
+        }
+      } finally {
+        controller.close();
+      }
+    },
+    cancel() {
+      stream.controller.abort();
+    },
+  });
+}
+
 // ── Anthropic streaming ──────────────────────────────────────
 
 async function callAnthropic(
@@ -136,22 +181,26 @@ export async function POST(event: APIEvent) {
   }
 
   const openspaceUrl = process.env.OPENSPACE_URL;
+  const nebiusKey = process.env.NEBIUS_API_KEY;
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
 
-  if (!openspaceUrl && !anthropicKey) {
+  if (!openspaceUrl && !nebiusKey && !anthropicKey) {
     return new Response(
       JSON.stringify({
         error:
-          "Set ANTHROPIC_API_KEY (or OPENSPACE_URL for OpenSpace routing) in your .env file.",
+          "Set NEBIUS_API_KEY, ANTHROPIC_API_KEY, or OPENSPACE_URL in your .env file.",
       }),
       { status: 503, headers: { "Content-Type": "application/json" } }
     );
   }
 
   try {
-    const stream = openspaceUrl
-      ? await callOpenSpace(openspaceUrl, body)
-      : await callAnthropic(anthropicKey!, body);
+    // Priority: Nebius → Anthropic → OpenSpace
+    const stream = nebiusKey
+      ? await callNebius(nebiusKey, body)
+      : anthropicKey
+        ? await callAnthropic(anthropicKey, body)
+        : await callOpenSpace(openspaceUrl!, body);
 
     return new Response(stream, {
       headers: {
