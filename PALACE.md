@@ -27,3 +27,9 @@ This project uses the **MemPalace Architecture** to organize philosophical knowl
 - Verbatim storage of content (don't summarize Markdown).
 - Spatial organization: Always assign a `category` (Wing) and `tags` (Room) to new content.
 - Semantic connections: Use `relatedTopics` to build the knowledge graph.
+
+## 🧠 AI Mental Model (Proposed)
+- **Memory (RAG)**: Content from `.md` files is injected directly into the prompt via `topicBody`.
+- **Thought (LLM)**: Using DeepSeek/Llama via Nebius for low-latency philosophical reasoning.
+- **Context Engineering**: Strict history management (max 6 turns) to avoid "instruction drift" and optimize token usage.
+- **Measurement (Evals)**: Use `EVALS.md` golden dataset to verify response quality after any prompt change.

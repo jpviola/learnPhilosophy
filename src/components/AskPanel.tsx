@@ -4,12 +4,24 @@ import {
   Show,
   For,
   onCleanup,
+  createEffect,
 } from "solid-js";
 import clsx from "clsx";
 import { marked } from "marked";
 import type { Topic } from "~/lib/topics";
+import { getContentBySlug } from "~/lib/content";
+import { buildOntologyPromptContext } from "~/lib/ontology";
 
-// ── Suggested questions per topic ───────────────────────────
+// ── Types ────────────────────────────────────────────────────
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface AskPanelProps {
+  topic: Topic;
+}
 
 const SUGGESTED: Record<string, string[]> = {
   stoicism: [
@@ -74,9 +86,18 @@ export function AskPanel(props: AskPanelProps) {
   const [loading, setLoading] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
   const [asked, setAsked] = createSignal(false);
+  const [history, setHistory] = createSignal<Message[]>([]);
 
   let abortController: AbortController | null = null;
   let textareaRef: HTMLTextAreaElement | undefined;
+
+  // Clear history when topic changes (Reset for new context)
+  createEffect(() => {
+    props.topic.id;
+    setHistory([]);
+    setAsked(false);
+    setAnswer("");
+  });
 
   onCleanup(() => abortController?.abort());
 
@@ -106,6 +127,9 @@ export function AskPanel(props: AskPanelProps) {
     setAsked(true);
 
     try {
+      const mdContent = getContentBySlug(props.topic.slug);
+      const ontologyContext = buildOntologyPromptContext(props.topic);
+      
       const res = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -115,7 +139,10 @@ export function AskPanel(props: AskPanelProps) {
           topicName: props.topic.name,
           topicDescription: props.topic.description,
           topicCategory: props.topic.category,
+          topicBody: mdContent?.body, // RAG: Sending full MD content
+          ontologyContext,
           resourceTitles: props.topic.resources.map((r) => r.title),
+          history: history(), // Tokens & Context: Sending previous messages
         }),
       });
 
@@ -130,8 +157,16 @@ export function AskPanel(props: AskPanelProps) {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        setAnswer((prev) => prev + decoder.decode(value, { stream: true }));
+        const text = decoder.decode(value, { stream: true });
+        setAnswer((prev) => prev + text);
       }
+
+      // Update history after successful stream
+      setHistory(prev => [
+        ...prev, 
+        { role: "user", content: trimmed },
+        { role: "assistant", content: answer() }
+      ]);
     } catch (err) {
       if ((err as Error).name === "AbortError") return;
       setError((err as Error).message ?? "Something went wrong.");

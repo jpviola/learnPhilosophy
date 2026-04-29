@@ -9,7 +9,10 @@ interface AskRequest {
   topicName: string;
   topicDescription: string;
   topicCategory: string;
+  topicBody?: string;
+  ontologyContext?: string;
   resourceTitles: string[];
+  history?: { role: "user" | "assistant"; content: string }[];
 }
 
 // ── System prompt ────────────────────────────────────────────
@@ -20,17 +23,28 @@ function buildSystemPrompt(req: AskRequest): string {
       ? `\nKey works on this topic: ${req.resourceTitles.join(", ")}.`
       : "";
 
+  const knowledgeBase = req.topicBody 
+    ? `\nCORE KNOWLEDGE BASE (Use this as your primary source):\n${req.topicBody}`
+    : "";
+  const ontologyContext = req.ontologyContext
+    ? `\nONTOLOGY MAP (Use this to type entities, relations, rules, and source traceability):\n${req.ontologyContext}`
+    : "";
+
   return `You are a knowledgeable and engaging philosophy teacher specializing in ${req.topicName} (${req.topicCategory}).
 
-Topic context: ${req.topicDescription}${resources}
+Topic context: ${req.topicDescription}${resources}${ontologyContext}${knowledgeBase}
 
 Guidelines:
-- Answer clearly and precisely, rooted in the topic context above.
+- Answer clearly and precisely, rooted in the topic context and knowledge base provided above (RAG).
+- Use the ontology map to distinguish entity types, relationships, learning resources, and conceptual neighbors.
+- Prefer relationships from the ontology when explaining how ideas connect.
+- Preserve traceability: when using a claim from the provided topic body, resources, or ontology, mention the relevant work, philosopher, concept, or source context naturally.
 - Reference specific philosophers, texts, or arguments from the resources when relevant.
 - Keep answers focused: 2–4 paragraphs max.
-- Use accessible language — assume an intellectually curious reader, not an academic.
+- Use accessible language — assume a curious high school or early college student.
 - If the question is outside this topic's scope, briefly redirect toward what the topic can offer.
-- Do not use markdown headers. Use plain paragraphs. Bold key terms sparingly.`;
+- Do not use markdown headers. Use plain paragraphs. Bold key terms sparingly.
+- If the user provides a history of conversation, maintain continuity and avoid repeating yourself.`;
 }
 
 // ── OpenSpace MCP integration ────────────────────────────────
@@ -43,6 +57,10 @@ async function callOpenSpace(
   url: string,
   req: AskRequest
 ): Promise<ReadableStream<Uint8Array>> {
+  // Context Engineering: Only keep the last 6 messages
+  const maxHistory = 6;
+  const history = req.history?.slice(-maxHistory) ?? [];
+
   const body = JSON.stringify({
     jsonrpc: "2.0",
     id: 1,
@@ -53,7 +71,10 @@ async function callOpenSpace(
         question: req.question,
         topic: req.topicName,
         context: req.topicDescription,
+        body: req.topicBody, // RAG: Full content
+        ontology: req.ontologyContext,
         resources: req.resourceTitles,
+        history, // Context Engineering: History
       },
     },
   });
@@ -95,14 +116,21 @@ async function callNebius(
   const model = process.env.NEBIUS_MODEL ?? "deepseek-ai/DeepSeek-R1-0528";
   const encoder = new TextEncoder();
 
+  // Context Engineering: Only keep the last 6 messages to stay within context window limits
+  const maxHistory = 6;
+  const history = req.history?.slice(-maxHistory) ?? [];
+
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    { role: "system", content: buildSystemPrompt(req) },
+    ...history.map(h => ({ role: h.role, content: h.content })),
+    { role: "user", content: req.question },
+  ];
+
   const stream = await client.chat.completions.create({
     model,
     max_tokens: 1024,
     stream: true,
-    messages: [
-      { role: "system", content: buildSystemPrompt(req) },
-      { role: "user", content: req.question },
-    ],
+    messages,
   });
 
   return new ReadableStream<Uint8Array>({
@@ -131,11 +159,18 @@ async function callAnthropic(
   const client = new Anthropic({ apiKey });
   const encoder = new TextEncoder();
 
+  // Context Engineering: Only keep the last 6 messages
+  const maxHistory = 6;
+  const history = req.history?.slice(-maxHistory) ?? [];
+
   const stream = client.messages.stream({
     model: "claude-sonnet-4-6",
     max_tokens: 1024,
     system: buildSystemPrompt(req),
-    messages: [{ role: "user", content: req.question }],
+    messages: [
+      ...history.map(h => ({ role: h.role, content: h.content })),
+      { role: "user", content: req.question }
+    ],
   });
 
   return new ReadableStream<Uint8Array>({
