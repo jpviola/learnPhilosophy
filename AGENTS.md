@@ -35,15 +35,19 @@ markdown) is Phase 3 (`src/lib/retrieval/`).
   learner memory in `lib/learner.ts` (injected as `learnerContext`).
 - **Tools** — `agent/tools/topic-tools.ts` (`getRelatedTopics`,
   `buildLearningPath`) and `agent/quiz.ts`, surfaced by the `LearningPath` and
-  `Quiz` components. Deterministic today; the seam for LLM function-calling.
+  `Quiz` components, and exposed to the model via function-calling.
+- **LLM tool use** — `agent/agentic.ts` runs a tool-calling loop when a turn sets
+  `tools: true` (the global chat bar). The model calls `search_topics`,
+  `get_related_topics`, `build_learning_path` (`agent/tools/registry.ts`), then
+  streams its answer; tool results return as `actions` via the `X-Tutor-Actions`
+  header for the UI to render. Falls back to a plain answer on failure.
 - **Retrieval** — `lib/retrieval` (lexical; embeddings later).
 - **Eval / observability** — `evals/` + `/api/eval`, `lib/observability/`.
 
 ## Still future
 
 - **Query understanding** — `agent/router.ts`, `agent/query-rewriter.ts`.
-- **LLM-driven tool use** — give the model the `topic-tools` functions via
-  function-calling so it can navigate/path/quiz inside a conversation.
+- **Embedding retrieval** and an **LLM-judge** eval mode.
 
 When adding an agentic capability, give it a home in these directories rather than
 expanding the HTTP handler.

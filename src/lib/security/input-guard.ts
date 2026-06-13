@@ -56,6 +56,9 @@ export function guardRequest(body: unknown): GuardResult {
   if (req.learnerContext && req.learnerContext.length > LIMITS.learnerContext) {
     return { ok: false, status: 413, error: "learnerContext too large" };
   }
+  if (req.tools !== undefined && typeof req.tools !== "boolean") {
+    return { ok: false, status: 400, error: "tools must be a boolean" };
+  }
   return { ok: true, status: 200 };
 }
 

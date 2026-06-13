@@ -35,4 +35,6 @@ export interface AskRequest {
   mode?: TutorMode;
   /** Short summary of the learner's history, injected to personalize answers. */
   learnerContext?: string;
+  /** Enable tool use (topic navigation + learning paths) for this turn. */
+  tools?: boolean;
 }

@@ -1,4 +1,4 @@
-import { createSignal, createMemo, Show, onMount } from "solid-js";
+import { createSignal, createMemo, Show, For, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import clsx from "clsx";
 import { useI18n } from "~/i18n";
@@ -19,16 +19,26 @@ export function GlobalChatBar() {
     topicDescription: t("chat.generalDescription"),
     topicCategory: "Philosophy",
     resourceTitles: [],
+    tools: true, // the tutor can navigate the graph and build paths
   });
 
   const ask = useAsk({ context, locale, mode });
 
-  // Suggest a concrete topic to open, based on the question just asked.
-  const suggestedTopic = createMemo(() => {
+  // Topics the tutor surfaced via tools; fall back to a keyword guess.
+  const topicActions = createMemo(() =>
+    ask.actions().filter((a) => a.type === "topic" && a.slug)
+  );
+  const pathAction = createMemo(() => ask.actions().find((a) => a.type === "path"));
+  const fallbackTopic = createMemo(() => {
+    if (ask.actions().length) return undefined;
     const q = ask.question().trim();
-    if (!q) return undefined;
-    return searchTopics(q)[0];
+    return q ? searchTopics(q)[0] : undefined;
   });
+
+  function go(slug: string) {
+    navigate(`/topic/${slug}`);
+    setOpen(false);
+  }
 
   function send() {
     ask.submit(ask.question(), t("ask.errorGeneric"));
@@ -115,14 +125,60 @@ export function GlobalChatBar() {
                 </Show>
               </div>
 
-              <Show when={!ask.loading() && suggestedTopic()}>
+              {/* Learning path the tutor built */}
+              <Show when={!ask.loading() && pathAction()}>
+                {(path) => (
+                  <div class="rounded-xl border border-brand-border bg-brand-surface p-3">
+                    <p class="text-[11px] font-semibold uppercase tracking-wide text-brand-muted mb-2">
+                      {t("path.title")}
+                    </p>
+                    <ol class="space-y-1.5">
+                      <For each={path().steps}>
+                        {(step, i) => (
+                          <li>
+                            <button
+                              type="button"
+                              onClick={() => go(step.slug)}
+                              class="flex items-center gap-2 text-left text-xs text-brand-text hover:text-brand-primary w-full"
+                            >
+                              <span class="text-brand-muted font-mono">{i() + 1}.</span>
+                              <span class="flex-1">{step.name}</span>
+                              <span class="text-[10px] text-brand-muted uppercase">
+                                {t(`path.${step.role}`)}
+                              </span>
+                            </button>
+                          </li>
+                        )}
+                      </For>
+                    </ol>
+                  </div>
+                )}
+              </Show>
+
+              {/* Topics the tutor surfaced */}
+              <Show when={!ask.loading() && topicActions().length > 0}>
+                <div class="flex flex-wrap gap-2">
+                  <For each={topicActions()}>
+                    {(action) => (
+                      <button
+                        type="button"
+                        onClick={() => go(action.slug!)}
+                        class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-primary hover:underline"
+                      >
+                        <span aria-hidden="true">→</span>
+                        {t("chat.openTopic", { name: action.name ?? action.slug ?? "" })}
+                      </button>
+                    )}
+                  </For>
+                </div>
+              </Show>
+
+              {/* Fallback keyword suggestion when no tool actions */}
+              <Show when={!ask.loading() && fallbackTopic()}>
                 {(topic) => (
                   <button
                     type="button"
-                    onClick={() => {
-                      navigate(`/topic/${topic().slug}`);
-                      setOpen(false);
-                    }}
+                    onClick={() => go(topic().slug)}
                     class="inline-flex items-center gap-1.5 text-xs font-medium text-brand-primary hover:underline"
                   >
                     <span aria-hidden="true">→</span>

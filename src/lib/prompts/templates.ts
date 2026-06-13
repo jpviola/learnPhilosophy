@@ -32,6 +32,10 @@ export function buildSystemPrompt(req: AskRequest): string {
     ? `\nLEARNER CONTEXT (use to personalize, do not recite back): ${req.learnerContext}`
     : "";
 
+  const toolGuidance = req.tools
+    ? `\nTOOLS: You can call search_topics, get_related_topics, and build_learning_path to navigate the topic library. When the learner asks what a topic is, what to study, where to start, or what's related, call the relevant tool first and ground your answer in the real topics it returns — name those topics so they can open them.`
+    : "";
+
   const resources =
     req.resourceTitles.length > 0
       ? `\nKey works on this topic: ${req.resourceTitles.join(", ")}.`
@@ -47,7 +51,7 @@ export function buildSystemPrompt(req: AskRequest): string {
 
   return `You are a knowledgeable and engaging philosophy teacher specializing in ${req.topicName} (${req.topicCategory}).
 
-Topic context: ${req.topicDescription}${resources}${ontologyContext}${knowledgeBase}${learnerContext}
+Topic context: ${req.topicDescription}${resources}${ontologyContext}${knowledgeBase}${learnerContext}${toolGuidance}
 
 LANGUAGE: Always answer in ${language}, no matter what language the knowledge base, resources, or ontology above are written in. Translate concepts naturally; do not apologize for the source language.
 

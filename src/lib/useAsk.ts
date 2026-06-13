@@ -3,6 +3,7 @@ import { marked } from "marked";
 import { level, buildLearnerContext, recordQuestion } from "~/lib/learner";
 import type { Locale } from "~/i18n/locale";
 import type { ChatMessage, TutorMode } from "~/lib/agent/types";
+import type { TutorAction } from "~/lib/agent/tools/registry";
 
 export interface AskContext {
   topicName: string;
@@ -11,6 +12,8 @@ export interface AskContext {
   topicBody?: string;
   ontologyContext?: string;
   resourceTitles: string[];
+  /** Enable tool use (topic navigation + learning paths) for this surface. */
+  tools?: boolean;
 }
 
 /**
@@ -29,6 +32,7 @@ export function useAsk(opts: {
   const [error, setError] = createSignal<string | null>(null);
   const [asked, setAsked] = createSignal(false);
   const [history, setHistory] = createSignal<ChatMessage[]>([]);
+  const [actions, setActions] = createSignal<TutorAction[]>([]);
 
   let abortController: AbortController | null = null;
   onCleanup(() => abortController?.abort());
@@ -55,6 +59,7 @@ export function useAsk(opts: {
     setError(null);
     setLoading(true);
     setAsked(true);
+    setActions([]);
     recordQuestion(trimmed);
 
     try {
@@ -77,6 +82,16 @@ export function useAsk(opts: {
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error ?? `HTTP ${res.status}`);
+      }
+
+      // Tutor navigation actions arrive in a header before the streamed body.
+      const actionsHeader = res.headers.get("X-Tutor-Actions");
+      if (actionsHeader) {
+        try {
+          setActions(JSON.parse(decodeURIComponent(actionsHeader)) as TutorAction[]);
+        } catch {
+          /* ignore malformed action header */
+        }
       }
 
       const reader = res.body!.getReader();
@@ -107,6 +122,7 @@ export function useAsk(opts: {
     setError(null);
     setAsked(false);
     setQuestion("");
+    setActions([]);
   }
 
   /** Resets everything, including history (e.g. when the topic changes). */
@@ -124,6 +140,7 @@ export function useAsk(opts: {
     error,
     asked,
     history,
+    actions,
     submit,
     reset,
     resetConversation,

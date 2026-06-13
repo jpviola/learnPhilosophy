@@ -1,6 +1,8 @@
 import { openProviderStream } from "~/lib/llm/provider";
 import { createThinkFilter } from "~/lib/security/output-filter";
 import { retrieveContext } from "~/lib/retrieval";
+import { runAgenticTurn } from "./agentic";
+import type { TutorAction } from "./tools/registry";
 import type { AskRequest } from "./types";
 
 export interface PipelineResult {
@@ -8,6 +10,12 @@ export interface PipelineResult {
   stream: ReadableStream<Uint8Array>;
   /** Whether retrieval trimmed the topic body for this turn. */
   retrieved: boolean;
+  /** Topics / learning path the tutor surfaced via tools (for the UI). */
+  actions: TutorAction[];
+}
+
+function toolCapableProviderAvailable(): boolean {
+  return Boolean(process.env.NEBIUS_API_KEY || process.env.ANTHROPIC_API_KEY);
 }
 
 // Above this size, send only the passages most relevant to the question instead
@@ -30,10 +38,22 @@ export async function runAskPipeline(req: AskRequest): Promise<PipelineResult> {
     }
   }
 
+  // Tool-using turn: the tutor may navigate the topic graph and build a path.
+  // Falls back to a plain answer if the agentic loop fails.
+  if (req.tools && toolCapableProviderAvailable()) {
+    try {
+      const { provider, stream, actions } = await runAgenticTurn(req);
+      return { provider, retrieved, actions, stream: stream.pipeThrough(thinkFilterTransform()) };
+    } catch (err) {
+      console.warn("[pipeline] agentic turn failed, falling back to plain answer:", err);
+    }
+  }
+
   const { provider, stream } = await openProviderStream(req);
   return {
     provider,
     retrieved,
+    actions: [],
     stream: stream.pipeThrough(thinkFilterTransform()),
   };
 }

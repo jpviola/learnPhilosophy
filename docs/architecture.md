@@ -36,7 +36,7 @@ lib/agent/pipeline.ts       orchestration
 | Monitoring | `lib/observability/tracer` (structured JSON logs) | done |
 | Cost | `lib/observability/cost` (token + USD estimate) | done |
 | Agent structure | `lib/agent/*`, levels + Socratic mode, learner memory | done |
-| Tool use | `lib/agent/tools/*`, learning paths, quizzes | deterministic (LLM function-calling = future) |
+| Tool use | `lib/agent/tools/*`, learning paths, quizzes, LLM function-calling | done |
 
 ## Tools, learning paths, and quizzes (Phase 4)
 
@@ -45,8 +45,16 @@ graph + ontology (`getRelatedTopics`, `buildLearningPath`). `lib/agent/quiz.ts`
 generates multiple-choice questions from topic metadata and the ontology, with no
 randomness so SSR and client agree. The topic page renders an interactive
 `LearningPath` (a study route that marks topics the learner has already visited)
-and a `Quiz` (instant feedback, score). These functions are the seam for exposing
-the same capabilities to an LLM via function-calling later.
+and a `Quiz` (instant feedback, score).
+
+When a chat turn sets `tools: true` (the global chat bar does), the pipeline runs
+the **agentic loop** (`lib/agent/agentic.ts`): the model may call `search_topics`,
+`get_related_topics`, and `build_learning_path` (`lib/agent/tools/registry.ts`)
+across up to a few rounds, then streams its final answer. Tool calls also produce
+`actions` (topics + a learning path) returned to the client in the
+`X-Tutor-Actions` header, which the chat bar renders as clickable links and a path.
+Works on the Nebius (OpenAI-compatible) and Anthropic providers; falls back to a
+plain answer if the agentic loop fails.
 
 ## Retrieval
 

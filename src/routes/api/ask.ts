@@ -59,7 +59,7 @@ export async function POST(event: APIEvent) {
   const inputChars = inputCharCount(req);
 
   try {
-    const { stream, provider, retrieved } = await runAskPipeline(req);
+    const { stream, provider, retrieved, actions } = await runAskPipeline(req);
 
     // Count streamed output for cost/observability without buffering the body.
     let outputChars = 0;
@@ -84,13 +84,17 @@ export async function POST(event: APIEvent) {
       })
     );
 
-    return new Response(counted, {
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "Transfer-Encoding": "chunked",
-        "X-Content-Type-Options": "nosniff",
-      },
-    });
+    const headers: Record<string, string> = {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Transfer-Encoding": "chunked",
+      "X-Content-Type-Options": "nosniff",
+    };
+    // Tutor's navigation actions (topics/path) travel in a header, URI-encoded.
+    if (actions.length > 0) {
+      headers["X-Tutor-Actions"] = encodeURIComponent(JSON.stringify(actions));
+    }
+
+    return new Response(counted, { headers });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     trace.end({ status: "error", error: message, inputChars });
