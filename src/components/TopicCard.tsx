@@ -1,6 +1,7 @@
 import { A } from "@solidjs/router";
 import clsx from "clsx";
 import { Topic } from "~/lib/topics";
+import { useI18n } from "~/i18n";
 
 interface TopicCardProps {
   topic: Topic;
@@ -15,13 +16,9 @@ const resourceTypeIcons: Record<string, string> = {
   paper: "📑",
 };
 
-function formatCount(n: number): string {
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
-  return String(n);
-}
-
 export function TopicCard(props: TopicCardProps) {
   const { topic } = props;
+  const { t } = useI18n();
 
   return (
     <A
@@ -73,17 +70,21 @@ export function TopicCard(props: TopicCardProps) {
 
       {/* Stats footer */}
       <div class="flex items-center justify-between pt-3 border-t border-brand-border/70">
-        <span class="text-xs text-brand-muted">
-          <span class="font-semibold text-brand-secondary">
-            {topic.resourceCount}
-          </span>{" "}
-          resources
-        </span>
+        {topic.resources.length > 0 ? (
+          <span class="text-xs text-brand-muted">
+            <span class="font-semibold text-brand-secondary">
+              {topic.resources.length}
+            </span>{" "}
+            {t("common.resources")}
+          </span>
+        ) : (
+          <span />
+        )}
         <span class="text-xs text-brand-muted">
           <span class="font-semibold text-brand-text">
-            {formatCount(topic.learnerCount)}
+            {topic.relatedNodes.length}
           </span>{" "}
-          learners
+          {t("common.connections")}
         </span>
       </div>
     </A>

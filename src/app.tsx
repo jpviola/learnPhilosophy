@@ -3,6 +3,8 @@ import { FileRoutes } from "@solidjs/start/router";
 import { Show, Suspense } from "solid-js";
 import { Header } from "~/components/Header";
 import { Footer } from "~/components/Footer";
+import { GlobalChatBar } from "~/components/GlobalChatBar";
+import { I18nProvider } from "~/i18n";
 import "~/styles/app.css";
 
 function Layout(props: { children: any }) {
@@ -40,6 +42,8 @@ function Layout(props: { children: any }) {
         <Show when={!isHome()}>
           <Footer />
         </Show>
+
+        <GlobalChatBar />
       </div>
     </>
   );
@@ -47,8 +51,10 @@ function Layout(props: { children: any }) {
 
 export default function App() {
   return (
-    <Router root={(props) => <Layout>{props.children}</Layout>}>
-      <FileRoutes />
-    </Router>
+    <I18nProvider>
+      <Router root={(props) => <Layout>{props.children}</Layout>}>
+        <FileRoutes />
+      </Router>
+    </I18nProvider>
   );
 }

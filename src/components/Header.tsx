@@ -1,9 +1,12 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { A, useLocation } from "@solidjs/router";
 import clsx from "clsx";
+import { useI18n } from "~/i18n";
+import { LanguageSwitcher } from "~/components/LanguageSwitcher";
 
 export function Header() {
   const location = useLocation();
+  const { t } = useI18n();
   const [scrolled, setScrolled] = createSignal(false);
 
   onMount(() => {
@@ -40,7 +43,7 @@ export function Header() {
               "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
               isHome() && "focus-visible:ring-offset-neutral-950"
             )}
-            aria-label="LearnPhilosophy home"
+            aria-label={t("header.homeAria")}
           >
             <div
               class="w-6 h-6 rounded-md bg-emerald-500 flex items-center justify-center flex-shrink-0 transition-transform duration-150 group-hover:scale-105"
@@ -63,15 +66,17 @@ export function Header() {
           </A>
 
           {/* Right nav */}
-          <nav class="flex items-center gap-3" aria-label="Primary navigation">
+          <nav class="flex items-center gap-2 sm:gap-3" aria-label="Primary navigation">
             {!isHome() && (
               <A
                 href="/"
                 class="text-sm text-brand-muted hover:text-brand-text transition-colors duration-150 hidden sm:block"
               >
-                ← Explore
+                {t("header.explore")}
               </A>
             )}
+
+            <LanguageSwitcher dark={isHome()} />
 
             <a
               href={isHome() ? "#" : "#resources"}
@@ -83,7 +88,7 @@ export function Header() {
                   : "text-brand-muted hover:text-brand-text"
               )}
             >
-              Sign in
+              {t("header.signIn")}
             </a>
           </nav>
         </div>

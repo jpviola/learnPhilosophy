@@ -10,6 +10,8 @@ export interface TopicMeta {
   learnerCount?: number;
   tags?: string[];
   relatedTopics?: string[];
+  /** Source language of the markdown body (BCP-ish; defaults to "es"). */
+  lang: string;
 }
 
 export interface TopicContent {
@@ -114,6 +116,7 @@ function buildContentMap(): Map<string, TopicContent> {
         relatedTopics: Array.isArray(data.relatedTopics)
           ? (data.relatedTopics as string[])
           : undefined,
+        lang: data.lang ? String(data.lang) : "es",
       },
       body: body.trim(),
     });

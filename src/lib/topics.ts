@@ -611,10 +611,17 @@ const contentNameMap = new Map<string, string>(
 // Also include seed topics in the name map
 for (const t of SEED_TOPICS) contentNameMap.set(t.slug, t.name);
 
+// Resource counts are derived from the resources actually listed, so the UI never
+// claims more sources than it can show. Topics sourced from .md files have no
+// structured resources yet, so they report 0 until resources are added.
+function withDerivedCounts(t: Topic): Topic {
+  return { ...t, resourceCount: t.resources.length };
+}
+
 export const ALL_TOPICS: Topic[] = [
   ...SEED_TOPICS,
   ...allContent.map((c) => topicFromContent(c, contentNameMap)),
-];
+].map(withDerivedCounts);
 
 // ── Lookup helpers ─────────────────────────────────────────
 

@@ -1,4 +1,13 @@
-import { createMemo, Show, For, Suspense, createSignal, createEffect } from "solid-js";
+import {
+  createMemo,
+  Show,
+  For,
+  Suspense,
+  createSignal,
+  createEffect,
+  createResource,
+} from "solid-js";
+import { isServer } from "solid-js/web";
 import { useParams, A } from "@solidjs/router";
 import { clientOnly } from "@solidjs/start";
 import clsx from "clsx";
@@ -10,7 +19,10 @@ import { Button } from "~/components/Button";
 import { getTopicBySlug, ALL_TOPICS, type Resource } from "~/lib/topics";
 import { getContentBySlug } from "~/lib/content";
 import { AskPanel } from "~/components/AskPanel";
+import { LearningPath } from "~/components/LearningPath";
+import { Quiz } from "~/components/Quiz";
 import { renderMarkdown } from "~/lib/markdown";
+import { useI18n } from "~/i18n";
 
 // Client-only: canvas doesn't render on the server to avoid hydration issues
 const GraphPanel = clientOnly(() =>
@@ -45,6 +57,7 @@ const DIFFICULTY_COLORS: Record<Resource["difficulty"], string> = {
 
 function ResourceCard(props: { resource: Resource; index: number }) {
   const { resource: r } = props;
+  const { t } = useI18n();
   return (
     <div
       class={clsx(
@@ -83,7 +96,7 @@ function ResourceCard(props: { resource: Resource; index: number }) {
                 DIFFICULTY_COLORS[r.difficulty]
               )}
             >
-              {r.difficulty}
+              {t(`common.${r.difficulty}`)}
             </span>
             <span class="text-xs text-brand-muted border border-brand-border px-2 py-0.5 rounded-pill bg-brand-chip">
               {TYPE_LABELS[r.type]}
@@ -99,17 +112,16 @@ function ResourceCard(props: { resource: Resource; index: number }) {
 }
 
 function NotFound(props: { slug: string }) {
+  const { t } = useI18n();
   return (
     <main class="min-h-screen flex items-center justify-center">
       <Container width="narrow" class="text-center py-24">
         <div class="text-5xl mb-6" aria-hidden="true">🔍</div>
         <h1 class="text-2xl font-bold text-brand-text mb-3">
-          Topic not found
+          {t("topic.notFoundTitle")}
         </h1>
         <p class="text-brand-muted mb-8">
-          We couldn't find a topic called{" "}
-          <strong class="text-brand-text">"{props.slug}"</strong> — try
-          searching for it or browse what's available.
+          {t("topic.notFoundBody", { slug: props.slug })}
         </p>
         <div class="max-w-md mx-auto mb-8">
           <SearchBar size="compact" />
@@ -121,7 +133,7 @@ function NotFound(props: { slug: string }) {
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
-          Back to all topics
+          {t("topic.backToTopics")}
         </A>
       </Container>
     </main>
@@ -132,17 +144,55 @@ function NotFound(props: { slug: string }) {
 
 export default function TopicPage() {
   const params = useParams<{ slug: string }>();
+  const { t, locale } = useI18n();
   const [activeTab, setActiveTab] = createSignal<"resources" | "graph">(
     "resources"
   );
+  const [showOriginal, setShowOriginal] = createSignal(false);
 
   const topic = createMemo(() => getTopicBySlug(params.slug));
   const mdContent = createMemo(() => getContentBySlug(params.slug));
 
+  // Hybrid i18n: when the body's source language differs from the UI locale,
+  // fetch an on-demand (cached) AI translation. Falls back to the original.
+  const needsTranslation = createMemo(() => {
+    const c = mdContent();
+    return !!c && c.body.length > 0 && c.meta.lang !== locale();
+  });
+
+  const [translation] = createResource(
+    () =>
+      !isServer && needsTranslation() && !showOriginal()
+        ? { slug: params.slug, locale: locale() }
+        : null,
+    async (src) => {
+      const res = await fetch("/api/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(src),
+      });
+      if (!res.ok) return null;
+      return (await res.json()) as { body: string; translated: boolean };
+    }
+  );
+
+  const displayBody = () => {
+    const c = mdContent();
+    if (!c) return undefined;
+    if (showOriginal() || !needsTranslation()) return c.body;
+    const tr = translation();
+    return tr?.translated ? tr.body : c.body;
+  };
+  const isTranslating = () =>
+    needsTranslation() && !showOriginal() && translation.loading;
+  const isTranslated = () =>
+    needsTranslation() && !showOriginal() && translation()?.translated === true;
+
   createEffect(() => {
-    const t = topic();
-    if (t) document.title = `${t.name} — LearnPhilosophy`;
-    else document.title = "Topic not found — LearnPhilosophy";
+    const current = topic();
+    document.title = current
+      ? `${current.name} — LearnPhilosophy`
+      : t("topic.docNotFound");
   });
 
   const relatedTopics = createMemo(() =>
@@ -157,7 +207,7 @@ export default function TopicPage() {
   return (
     <>
       <Show when={topic()} fallback={<NotFound slug={params.slug} />}>
-        {(t) => (
+        {(tp) => (
           <>
             <main>
               {/* ── Topic Hero ──────────────────────────────────── */}
@@ -172,17 +222,17 @@ export default function TopicPage() {
                     class="flex items-center gap-1.5 text-xs text-brand-muted mb-6"
                   >
                     <A href="/" class="hover:text-brand-text transition-colors duration-fast">
-                      Home
+                      {t("topic.home")}
                     </A>
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
                     </svg>
-                    <span class="text-brand-muted">{t().category}</span>
+                    <span class="text-brand-muted">{tp().category}</span>
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="m9 18 6-6-6-6" />
                     </svg>
                     <span class="text-brand-text font-medium" aria-current="page">
-                      {t().name}
+                      {tp().name}
                     </span>
                   </nav>
 
@@ -192,7 +242,7 @@ export default function TopicPage() {
                       {/* Accent bar */}
                       <div
                         class="w-10 h-1.5 rounded-pill mb-4"
-                        style={{ background: t().color ?? "#2DD4BF" }}
+                        style={{ background: tp().color ?? "#2DD4BF" }}
                         aria-hidden="true"
                       />
 
@@ -200,57 +250,85 @@ export default function TopicPage() {
                         id="topic-heading"
                         class="text-[clamp(2rem,5vw,3rem)] font-bold text-brand-text leading-tight tracking-tight mb-3"
                       >
-                        {t().name}
+                        {tp().name}
                       </h1>
 
                       <p class="text-lg text-brand-muted font-medium mb-4">
-                        {t().tagline}
+                        {tp().tagline}
                       </p>
 
                       {/* Markdown body if .md file exists, else plain description */}
                       <Show when={mdContent()?.body} fallback={
                         <p class="text-brand-muted leading-relaxed mb-6 max-w-2xl">
-                          {t().description}
+                          {tp().description}
                         </p>
                       }>
-                        {(body) => (
+                        <div class="mb-6 max-w-2xl">
+                          {/* Translation status / controls */}
+                          <Show
+                            when={
+                              needsTranslation() &&
+                              (isTranslating() || isTranslated() || showOriginal())
+                            }
+                          >
+                            <div class="flex items-center gap-3 mb-2 text-xs">
+                              <Show when={!showOriginal()}>
+                                <Show
+                                  when={!isTranslating()}
+                                  fallback={
+                                    <span class="text-brand-muted animate-pulse">
+                                      {t("content.translating")}
+                                    </span>
+                                  }
+                                >
+                                  <Show when={isTranslated()}>
+                                    <span class="inline-flex items-center gap-1 text-brand-primary bg-brand-primary/10 border border-brand-primary/20 rounded-pill px-2 py-0.5">
+                                      ✨ {t("content.aiTranslated")}
+                                    </span>
+                                  </Show>
+                                </Show>
+                              </Show>
+                              <button
+                                type="button"
+                                onClick={() => setShowOriginal((v) => !v)}
+                                class="text-brand-primary hover:underline"
+                              >
+                                {showOriginal()
+                                  ? t("content.showTranslation")
+                                  : t("content.showOriginal")}
+                              </button>
+                            </div>
+                          </Show>
                           <div
-                            class="prose-content text-brand-muted leading-relaxed mb-6 max-w-2xl"
-                            innerHTML={renderMarkdown(body())}
+                            class="prose-content text-brand-muted leading-relaxed"
+                            innerHTML={renderMarkdown(displayBody() ?? "")}
                           />
-                        )}
+                        </div>
                       </Show>
 
                       {/* Tags */}
                       <ChipRow class="mb-6">
-                        <For each={t().tags}>
+                        <For each={tp().tags}>
                           {(tag) => <TopicChip label={tag} />}
                         </For>
                       </ChipRow>
 
                       {/* Stats */}
                       <div class="flex flex-wrap items-center gap-5">
-                        <div>
-                          <span class="text-2xl font-bold text-brand-secondary">
-                            {t().resourceCount}
-                          </span>
-                          <span class="text-sm text-brand-muted ml-1.5">
-                            resources
-                          </span>
-                        </div>
-                        <div class="w-px h-5 bg-brand-border" aria-hidden="true" />
-                        <div>
-                          <span class="text-2xl font-bold text-brand-secondary">
-                            {t().learnerCount.toLocaleString()}
-                          </span>
-                          <span class="text-sm text-brand-muted ml-1.5">
-                            learners
-                          </span>
-                        </div>
-                        <div class="w-px h-5 bg-brand-border" aria-hidden="true" />
+                        <Show when={tp().resources.length > 0}>
+                          <div>
+                            <span class="text-2xl font-bold text-brand-secondary">
+                              {tp().resources.length}
+                            </span>
+                            <span class="text-sm text-brand-muted ml-1.5">
+                              {t("common.resources")}
+                            </span>
+                          </div>
+                          <div class="w-px h-5 bg-brand-border" aria-hidden="true" />
+                        </Show>
                         <div>
                           <span class="text-sm font-semibold text-brand-muted">
-                            {t().category}
+                            {tp().category}
                           </span>
                         </div>
                       </div>
@@ -262,7 +340,7 @@ export default function TopicPage() {
                         for="topic-search"
                         class="block text-xs font-semibold uppercase tracking-wider text-brand-muted mb-2"
                       >
-                        Find another topic
+                        {t("topic.findAnother")}
                       </label>
                       <SearchBar size="compact" />
                     </div>
@@ -294,7 +372,7 @@ export default function TopicPage() {
                         )}
                         onClick={() => setActiveTab(tab)}
                       >
-                        {tab === "resources" ? "📚 Resources" : "🗺 Knowledge Map"}
+                        {tab === "resources" ? t("topic.tabResources") : t("topic.tabMap")}
                       </button>
                     ))}
                   </div>
@@ -312,51 +390,61 @@ export default function TopicPage() {
                     >
                       <div class="flex items-center justify-between mb-5">
                         <h2 class="text-lg font-semibold text-brand-text">
-                          Resources
+                          {t("topic.resources")}
                           <span class="ml-2 text-sm font-normal text-brand-muted">
-                            ({t().resources.length})
+                            ({tp().resources.length})
                           </span>
                         </h2>
                         <Button variant="outline" size="sm">
-                          Save path
+                          {t("topic.savePath")}
                         </Button>
                       </div>
 
-                      {/* Difficulty legend */}
-                      <div class="flex flex-wrap items-center gap-2 mb-4">
-                        {(["beginner", "intermediate", "advanced"] as const).map(
-                          (d) => (
-                            <span
-                              class={clsx(
-                                "text-xs font-medium px-2 py-0.5 rounded-pill border",
-                                DIFFICULTY_COLORS[d]
-                              )}
-                            >
-                              {d}
-                            </span>
-                          )
-                        )}
-                        <span class="text-xs text-brand-muted ml-1">
-                          Difficulty levels
-                        </span>
-                      </div>
-
-                      <div class="space-y-3">
-                        <For each={t().resources}>
-                          {(resource, i) => (
-                            <ResourceCard resource={resource} index={i()} />
+                      {/* Difficulty legend — only when there are resources to label */}
+                      <Show when={tp().resources.length > 0}>
+                        <div class="flex flex-wrap items-center gap-2 mb-4">
+                          {(["beginner", "intermediate", "advanced"] as const).map(
+                            (d) => (
+                              <span
+                                class={clsx(
+                                  "text-xs font-medium px-2 py-0.5 rounded-pill border",
+                                  DIFFICULTY_COLORS[d]
+                                )}
+                              >
+                                {t(`common.${d}`)}
+                              </span>
+                            )
                           )}
-                        </For>
-                      </div>
+                          <span class="text-xs text-brand-muted ml-1">
+                            {t("topic.difficultyLevels")}
+                          </span>
+                        </div>
+                      </Show>
+
+                      <Show
+                        when={tp().resources.length > 0}
+                        fallback={
+                          <div class="p-5 rounded-xl border border-dashed border-brand-border bg-brand-chip/40 text-sm text-brand-muted leading-relaxed">
+                            {t("topic.noResources", { name: tp().name })}
+                          </div>
+                        }
+                      >
+                        <div class="space-y-3">
+                          <For each={tp().resources}>
+                            {(resource, i) => (
+                              <ResourceCard resource={resource} index={i()} />
+                            )}
+                          </For>
+                        </div>
+                      </Show>
 
                       {/* Contribution CTA */}
                       <div class="mt-6 p-4 rounded-xl border border-dashed border-brand-border bg-brand-chip/50 text-center">
                         <p class="text-sm text-brand-muted mb-2">
-                          Know a great resource for{" "}
-                          <span class="font-medium text-brand-text">{t().name}</span>?
+                          {t("topic.knowResource", { name: tp().name })}
                         </p>
                         <Button variant="ghost" size="sm" class="text-brand-primary hover:text-brand-primary-dark">
-                          + Suggest a resource
+                          {t("topic.suggestResource")}
                         </Button>
                       </div>
                     </div>
@@ -374,10 +462,10 @@ export default function TopicPage() {
                       <div class="lg:sticky lg:top-24">
                         <div class="flex items-center justify-between mb-4">
                           <h2 class="text-lg font-semibold text-brand-text">
-                            Knowledge Map
+                            {t("topic.knowledgeMap")}
                           </h2>
                           <span class="text-xs text-brand-muted bg-brand-chip border border-brand-border px-2 py-1 rounded-pill">
-                            {t().relatedNodes.length} connections
+                            {t("topic.connectionsCount", { count: tp().relatedNodes.length })}
                           </span>
                         </div>
 
@@ -386,15 +474,15 @@ export default function TopicPage() {
                             <div class="w-full h-[360px] rounded-xl border border-brand-border bg-brand-chip/50 flex items-center justify-center">
                               <div class="text-center">
                                 <div class="w-8 h-8 border-2 border-brand-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-                                <p class="text-sm text-brand-muted">Loading graph…</p>
+                                <p class="text-sm text-brand-muted">{t("topic.loadingGraph")}</p>
                               </div>
                             </div>
                           }
                         >
                           <GraphPanel
-                            nodes={t().relatedNodes}
-                            edges={t().edges}
-                            centerNodeId={t().id}
+                            nodes={tp().relatedNodes}
+                            edges={tp().edges}
+                            centerNodeId={tp().id}
                             class="h-[360px] lg:h-[420px]"
                           />
                         </Suspense>
@@ -403,15 +491,15 @@ export default function TopicPage() {
                         <div class="mt-3 flex flex-wrap gap-3 text-xs text-brand-muted">
                           <span class="flex items-center gap-1.5">
                             <span class="w-3 h-3 rounded-full bg-brand-primary inline-block" aria-hidden="true" />
-                            Current topic
+                            {t("topic.legendCurrent")}
                           </span>
                           <span class="flex items-center gap-1.5">
                             <span class="w-2.5 h-2.5 rounded-full bg-brand-secondary/70 inline-block" aria-hidden="true" />
-                            Related concept
+                            {t("topic.legendRelated")}
                           </span>
                           <span class="flex items-center gap-1.5">
                             <span class="w-4 h-px bg-brand-border inline-block" aria-hidden="true" />
-                            Connection
+                            {t("topic.legendConnection")}
                           </span>
                         </div>
                       </div>
@@ -421,7 +509,20 @@ export default function TopicPage() {
               </section>
 
               {/* ── Ask AI ──────────────────────────────────────── */}
-              <AskPanel topic={t()} />
+              <AskPanel topic={tp()} />
+
+              {/* ── Learn: path + quiz ──────────────────────────── */}
+              <section
+                aria-label="Learning path and quiz"
+                class="py-section-sm sm:py-section-md border-t border-brand-border"
+              >
+                <Container width="wide">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                    <LearningPath slug={tp().slug} />
+                    <Quiz topic={tp()} />
+                  </div>
+                </Container>
+              </section>
 
               {/* ── Related Topics ──────────────────────────────── */}
               <Show when={relatedTopics().length > 0}>
@@ -434,7 +535,7 @@ export default function TopicPage() {
                       id="related-heading"
                       class="text-xl font-bold text-brand-text mb-6"
                     >
-                      Related topics
+                      {t("topic.relatedTopics")}
                     </h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       <For each={relatedTopics()}>

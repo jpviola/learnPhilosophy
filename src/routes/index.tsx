@@ -1,14 +1,16 @@
-import { createSignal, createMemo, For, Show, onMount, onCleanup } from "solid-js";
+import { createSignal, createMemo, createEffect, For, Show, onMount, onCleanup } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import clsx from "clsx";
 import { searchTopics, ALL_TOPICS } from "~/lib/topics";
 import { buildPalace } from "~/lib/palace";
 import { LandingGraph, NodeTooltip, RippleOverlay, type HoverInfo } from "~/components/LandingGraph";
+import { useI18n } from "~/i18n";
 
 // ── Search ───────────────────────────────────────────────────
 
 function HomeSearch() {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [query, setQuery] = createSignal("");
   const [focused, setFocused] = createSignal(false);
   const [activeIdx, setActiveIdx] = createSignal(-1);
@@ -50,14 +52,14 @@ function HomeSearch() {
         <input
           type="text"
           autofocus
-          placeholder="type a topic…"
+          placeholder={t("home.searchPlaceholder")}
           value={query()}
           onInput={(e) => { setQuery(e.currentTarget.value); setActiveIdx(-1); }}
           onFocus={() => setFocused(true)}
           onKeyDown={onKey}
           spellcheck={false}
           autocomplete="off"
-          aria-label="Search philosophy topics"
+          aria-label={t("home.searchAria")}
           role="combobox"
           aria-expanded={showDropdown()}
           class={clsx(
@@ -102,7 +104,9 @@ function HomeSearch() {
                     <span class="block text-sm font-medium text-white/90">{topic.name}</span>
                     <span class="block text-xs text-white/35 truncate mt-0.5">{topic.tagline}</span>
                   </span>
-                  <span class="text-xs text-white/20 font-mono">{topic.resourceCount}</span>
+                  <Show when={topic.resources.length > 0}>
+                    <span class="text-xs text-white/20 font-mono">{topic.resources.length}</span>
+                  </Show>
                 </button>
               </li>
             )}
@@ -117,6 +121,7 @@ function HomeSearch() {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const [hoverInfo, setHoverInfo] = createSignal<HoverInfo | null>(null);
   const [ripple, setRipple] = createSignal<{ cx: number; cy: number } | null>(null);
@@ -124,9 +129,8 @@ export default function HomePage() {
 
   const palace = createMemo(() => buildPalace());
 
-  onMount(() => {
-    document.title = "LearnPhilosophy — I want to learn";
-    console.log('CLIENT: ALL_TOPICS length:', ALL_TOPICS.length);
+  createEffect(() => {
+    document.title = t("home.docTitle");
   });
 
   function handleNavigate(slug: string, cx: number, cy: number) {
@@ -166,11 +170,36 @@ export default function HomePage() {
             "background-clip": "text",
           }}
         >
-          I want to learn
+          {t("home.title")}
         </h1>
 
         <div class="pointer-events-auto w-full max-w-xs sm:max-w-sm px-6">
           <HomeSearch />
+        </div>
+
+        {/* Onboarding by interest — plain-language entry points for newcomers */}
+        <div class="pointer-events-auto mt-6 px-6 w-full max-w-md">
+          <p class="text-center text-xs text-white/30 mb-3">{t("home.startPrompt")}</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <For
+              each={[
+                { slug: "stoicism", label: t("home.interestLive") },
+                { slug: "epistemology", label: t("home.interestKnow") },
+                { slug: "political-philosophy", label: t("home.interestJust") },
+                { slug: "metaphysics", label: t("home.interestReal") },
+              ]}
+            >
+              {(item) => (
+                <button
+                  type="button"
+                  onClick={() => navigate(`/topic/${item.slug}`)}
+                  class="text-xs px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-white/70 hover:text-white hover:border-emerald-500/40 hover:bg-white/10 transition-all duration-fast"
+                >
+                  {item.label}
+                </button>
+              )}
+            </For>
+          </div>
         </div>
 
         <div class="mt-7 h-5 flex items-center">
@@ -180,16 +209,17 @@ export default function HomePage() {
                 <span class="text-white/60">{info().node.label}</span>
                 <Show when={info().node.slug}>
                   {" "}&mdash;{" "}
-                  <span class="text-emerald-500">click to explore</span>
+                  <span class="text-emerald-500">{t("home.clickToExplore")}</span>
                 </Show>
               </p>
             )}
           </Show>
           <Show when={!hoverInfo()}>
             <p class="text-xs text-white/18 tracking-wider select-none">
-              {ALL_TOPICS.length} topics &middot;{" "}
-              {ALL_TOPICS.reduce((a, t) => a + t.resourceCount, 0)} resources
-              &middot; drag to rearrange
+              {t("home.statLine", {
+                topics: ALL_TOPICS.length,
+                resources: ALL_TOPICS.reduce((a, topic) => a + topic.resourceCount, 0),
+              })}
             </p>
           </Show>
         </div>
@@ -216,7 +246,7 @@ export default function HomePage() {
           )}
         >
           <span class="text-lg">🏰</span>
-          {showPalace() ? "CLOSE PALACE" : "EXPLORE PALACE"}
+          {showPalace() ? t("home.closePalace") : t("home.explorePalace")}
         </button>
       </div>
 

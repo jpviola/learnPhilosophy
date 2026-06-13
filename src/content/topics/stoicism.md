@@ -2,6 +2,7 @@
 id: stoicism
 name: Stoicism
 tagline: Live according to nature and reason
+lang: en
 category: Ancient Philosophy
 color: "#2DD4BF"
 resourceCount: 48

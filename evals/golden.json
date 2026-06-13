@@ -1,0 +1,31 @@
+{
+  "description": "Golden retrieval-grounding set. For each question we check that the retrieval layer surfaces passages containing the expected key terms from the topic's content. Terms are matched case- and accent-insensitively.",
+  "threshold": 0.6,
+  "items": [
+    {
+      "slug": "kant",
+      "question": "¿En qué consiste el imperativo categórico de Kant?",
+      "expect": ["imperativo categórico", "universal"]
+    },
+    {
+      "slug": "platon",
+      "question": "¿Qué es la teoría de las Ideas de Platón?",
+      "expect": ["ideas"]
+    },
+    {
+      "slug": "platon",
+      "question": "¿Qué papel juega Sócrates en el pensamiento de Platón?",
+      "expect": ["sócrates"]
+    },
+    {
+      "slug": "aristoteles",
+      "question": "¿Cómo entiende Aristóteles la virtud?",
+      "expect": ["virtud"]
+    },
+    {
+      "slug": "stoicism",
+      "question": "What is within our control according to the Stoics?",
+      "expect": ["control"]
+    }
+  ]
+}

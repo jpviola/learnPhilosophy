@@ -1,27 +1,14 @@
-import {
-  createSignal,
-  createMemo,
-  Show,
-  For,
-  onCleanup,
-  createEffect,
-} from "solid-js";
+import { createSignal, createMemo, Show, For, createEffect } from "solid-js";
 import clsx from "clsx";
-import { marked } from "marked";
 import type { Topic } from "~/lib/topics";
 import { getContentBySlug } from "~/lib/content";
 import { buildOntologyPromptContext } from "~/lib/ontology";
+import { useI18n } from "~/i18n";
+import { useAsk, type AskContext } from "~/lib/useAsk";
+import { mode, recordTopicView } from "~/lib/learner";
+import { TutorControls } from "~/components/TutorControls";
 
-// ── Types ────────────────────────────────────────────────────
-
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
-interface AskPanelProps {
-  topic: Topic;
-}
+// ── Topic-specific starter questions (English source; generic fallback is i18n) ──
 
 const SUGGESTED: Record<string, string[]> = {
   stoicism: [
@@ -66,128 +53,58 @@ const SUGGESTED: Record<string, string[]> = {
   ],
 };
 
-function getSuggested(slug: string): string[] {
-  return SUGGESTED[slug] ?? [
-    "What are the core ideas of this school of thought?",
-    "Who are the most important thinkers in this area?",
-    "How does this philosophy apply to everyday life?",
-  ];
-}
-
-// ── Component ────────────────────────────────────────────────
-
 interface AskPanelProps {
   topic: Topic;
 }
 
 export function AskPanel(props: AskPanelProps) {
-  const [question, setQuestion] = createSignal("");
-  const [answer, setAnswer] = createSignal("");
-  const [loading, setLoading] = createSignal(false);
-  const [error, setError] = createSignal<string | null>(null);
-  const [asked, setAsked] = createSignal(false);
-  const [history, setHistory] = createSignal<Message[]>([]);
-
-  let abortController: AbortController | null = null;
+  const { t, locale } = useI18n();
+  const [feedback, setFeedback] = createSignal<"up" | "down" | null>(null);
   let textareaRef: HTMLTextAreaElement | undefined;
 
-  // Clear history when topic changes (Reset for new context)
+  const context = (): AskContext => ({
+    topicName: props.topic.name,
+    topicDescription: props.topic.description,
+    topicCategory: props.topic.category,
+    topicBody: getContentBySlug(props.topic.slug)?.body,
+    ontologyContext: buildOntologyPromptContext(props.topic),
+    resourceTitles: props.topic.resources.map((r) => r.title),
+  });
+
+  const ask = useAsk({ context, locale, mode });
+
+  // New topic → fresh conversation, and remember the visit.
   createEffect(() => {
-    props.topic.id;
-    setHistory([]);
-    setAsked(false);
-    setAnswer("");
+    const topic = props.topic;
+    ask.resetConversation();
+    setFeedback(null);
+    recordTopicView(topic.slug, topic.name);
   });
 
-  onCleanup(() => abortController?.abort());
+  const suggestions = createMemo(
+    () =>
+      SUGGESTED[props.topic.slug] ?? [
+        t("ask.suggestion1"),
+        t("ask.suggestion2"),
+        t("ask.suggestion3"),
+      ]
+  );
 
-  const suggestions = createMemo(() => getSuggested(props.topic.slug));
-
-  const answerHtml = createMemo(() => {
-    const raw = answer();
-    if (!raw) return "";
-    try {
-      return marked.parse(raw) as string;
-    } catch {
-      return raw;
-    }
-  });
-
-  async function submit(q: string) {
-    const trimmed = q.trim();
-    if (!trimmed || loading()) return;
-
-    abortController?.abort();
-    abortController = new AbortController();
-
-    setQuestion(trimmed);
-    setAnswer("");
-    setError(null);
-    setLoading(true);
-    setAsked(true);
-
-    try {
-      const mdContent = getContentBySlug(props.topic.slug);
-      const ontologyContext = buildOntologyPromptContext(props.topic);
-      
-      const res = await fetch("/api/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: abortController.signal,
-        body: JSON.stringify({
-          question: trimmed,
-          topicName: props.topic.name,
-          topicDescription: props.topic.description,
-          topicCategory: props.topic.category,
-          topicBody: mdContent?.body, // RAG: Sending full MD content
-          ontologyContext,
-          resourceTitles: props.topic.resources.map((r) => r.title),
-          history: history(), // Tokens & Context: Sending previous messages
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? `HTTP ${res.status}`);
-      }
-
-      const reader = res.body!.getReader();
-      const decoder = new TextDecoder();
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const text = decoder.decode(value, { stream: true });
-        setAnswer((prev) => prev + text);
-      }
-
-      // Update history after successful stream
-      setHistory(prev => [
-        ...prev, 
-        { role: "user", content: trimmed },
-        { role: "assistant", content: answer() }
-      ]);
-    } catch (err) {
-      if ((err as Error).name === "AbortError") return;
-      setError((err as Error).message ?? "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
+  function send(q: string) {
+    setFeedback(null);
+    ask.submit(q, t("ask.errorGeneric"));
   }
 
   function handleKeyDown(e: KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      submit(question());
+      send(ask.question());
     }
   }
 
-  function reset() {
-    abortController?.abort();
-    setAnswer("");
-    setError(null);
-    setAsked(false);
-    setQuestion("");
+  function askAnother() {
+    ask.reset();
+    setFeedback(null);
     setTimeout(() => textareaRef?.focus(), 0);
   }
 
@@ -198,7 +115,7 @@ export function AskPanel(props: AskPanelProps) {
     >
       <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div class="flex items-start gap-3 mb-6">
+        <div class="flex items-start gap-3 mb-5">
           <div
             class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base"
             style={{ background: props.topic.color ?? "#2DD4BF", opacity: "0.15" }}
@@ -211,18 +128,18 @@ export function AskPanel(props: AskPanelProps) {
               id="ask-heading"
               class="text-xl font-bold text-brand-text leading-tight"
             >
-              Ask about {props.topic.name}
+              {t("ask.heading", { name: props.topic.name })}
             </h2>
-            <p class="text-sm text-brand-muted mt-0.5">
-              AI answers grounded in the topic's concepts and sources
-            </p>
+            <p class="text-sm text-brand-muted mt-0.5">{t("ask.subtitle")}</p>
           </div>
         </div>
 
+        {/* Tutor controls (level + style) */}
+        <TutorControls class="mb-6" />
+
         {/* Input area — hidden once answered */}
-        <Show when={!asked()}>
+        <Show when={!ask.asked()}>
           <div class="space-y-4">
-            {/* Suggestions */}
             <div class="flex flex-wrap gap-2">
               <For each={suggestions()}>
                 {(s) => (
@@ -235,8 +152,8 @@ export function AskPanel(props: AskPanelProps) {
                       "text-left leading-snug"
                     )}
                     onClick={() => {
-                      setQuestion(s);
-                      submit(s);
+                      ask.setQuestion(s);
+                      send(s);
                     }}
                   >
                     {s}
@@ -245,14 +162,13 @@ export function AskPanel(props: AskPanelProps) {
               </For>
             </div>
 
-            {/* Textarea + send */}
             <div class="relative">
               <textarea
                 ref={textareaRef}
-                value={question()}
-                onInput={(e) => setQuestion(e.currentTarget.value)}
+                value={ask.question()}
+                onInput={(e) => ask.setQuestion(e.currentTarget.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={`Ask anything about ${props.topic.name}…`}
+                placeholder={t("ask.placeholder", { name: props.topic.name })}
                 rows={3}
                 class={clsx(
                   "w-full resize-none rounded-xl px-4 py-3 pr-12",
@@ -264,13 +180,13 @@ export function AskPanel(props: AskPanelProps) {
               />
               <button
                 type="button"
-                disabled={!question().trim()}
-                onClick={() => submit(question())}
-                aria-label="Send question"
+                disabled={!ask.question().trim()}
+                onClick={() => send(ask.question())}
+                aria-label={t("chat.send")}
                 class={clsx(
                   "absolute bottom-3 right-3 w-7 h-7 rounded-lg flex items-center justify-center",
                   "transition-all duration-fast",
-                  question().trim()
+                  ask.question().trim()
                     ? "bg-brand-primary text-white hover:opacity-90"
                     : "bg-brand-chip text-brand-muted cursor-not-allowed"
                 )}
@@ -291,16 +207,13 @@ export function AskPanel(props: AskPanelProps) {
                 </svg>
               </button>
             </div>
-            <p class="text-xs text-brand-muted">
-              Press Enter to send · Shift+Enter for new line
-            </p>
+            <p class="text-xs text-brand-muted">{t("ask.pressEnter")}</p>
           </div>
         </Show>
 
         {/* Answer area */}
-        <Show when={asked()}>
+        <Show when={ask.asked()}>
           <div class="space-y-4">
-            {/* Question bubble */}
             <div class="flex justify-end">
               <div
                 class={clsx(
@@ -309,11 +222,10 @@ export function AskPanel(props: AskPanelProps) {
                   "text-sm text-brand-text"
                 )}
               >
-                {question()}
+                {ask.question()}
               </div>
             </div>
 
-            {/* Answer bubble */}
             <div
               class={clsx(
                 "rounded-2xl rounded-tl-sm p-5",
@@ -321,27 +233,24 @@ export function AskPanel(props: AskPanelProps) {
                 "text-sm text-brand-text leading-relaxed"
               )}
             >
-              <Show when={loading() && !answer()}>
+              <Show when={ask.loading() && !ask.answer()}>
                 <div class="flex items-center gap-2 text-brand-muted">
                   <div class="flex gap-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-brand-primary animate-bounce [animation-delay:0ms]" />
                     <span class="w-1.5 h-1.5 rounded-full bg-brand-primary animate-bounce [animation-delay:150ms]" />
                     <span class="w-1.5 h-1.5 rounded-full bg-brand-primary animate-bounce [animation-delay:300ms]" />
                   </div>
-                  <span class="text-xs">Thinking…</span>
+                  <span class="text-xs">{t("ask.thinking")}</span>
                 </div>
               </Show>
 
-              <Show when={error()}>
-                <p class="text-red-600 text-sm">{error()}</p>
+              <Show when={ask.error()}>
+                <p class="text-red-600 text-sm">{ask.error()}</p>
               </Show>
 
-              <Show when={answer()}>
-                <div
-                  class="prose-content space-y-3"
-                  innerHTML={answerHtml()}
-                />
-                <Show when={loading()}>
+              <Show when={ask.answer()}>
+                <div class="prose-content space-y-3" innerHTML={ask.answerHtml()} />
+                <Show when={ask.loading()}>
                   <span
                     class="inline-block w-0.5 h-4 bg-brand-primary animate-pulse ml-0.5 align-middle"
                     aria-hidden="true"
@@ -350,12 +259,12 @@ export function AskPanel(props: AskPanelProps) {
               </Show>
             </div>
 
-            {/* Actions */}
-            <Show when={!loading()}>
-              <div class="flex items-center justify-between">
+            {/* Actions + feedback */}
+            <Show when={!ask.loading() && ask.answer()}>
+              <div class="flex items-center justify-between gap-3 flex-wrap">
                 <button
                   type="button"
-                  onClick={reset}
+                  onClick={askAnother}
                   class={clsx(
                     "text-xs text-brand-muted hover:text-brand-text",
                     "flex items-center gap-1.5 transition-colors duration-fast"
@@ -375,11 +284,37 @@ export function AskPanel(props: AskPanelProps) {
                       d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"
                     />
                   </svg>
-                  Ask another question
+                  {t("ask.askAnother")}
                 </button>
-                <span class="text-xs text-brand-muted opacity-60">
-                  Powered by Claude
-                </span>
+
+                <div class="flex items-center gap-2">
+                  <Show
+                    when={feedback() === null}
+                    fallback={
+                      <span class="text-xs text-brand-primary">
+                        {t("tutor.thanks")}
+                      </span>
+                    }
+                  >
+                    <span class="text-xs text-brand-muted">{t("tutor.helpful")}</span>
+                    <button
+                      type="button"
+                      aria-label="👍"
+                      onClick={() => setFeedback("up")}
+                      class="text-sm hover:scale-110 transition-transform"
+                    >
+                      👍
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="👎"
+                      onClick={() => setFeedback("down")}
+                      class="text-sm hover:scale-110 transition-transform"
+                    >
+                      👎
+                    </button>
+                  </Show>
+                </div>
               </div>
             </Show>
           </div>

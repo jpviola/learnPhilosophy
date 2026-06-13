@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { ALL_TOPICS, getTopicBySlug } from "~/lib/topics";
 import { getTopicColor } from "~/lib/palace";
 import { tickNodes, nodeAt, LANDING_OPTS, type SimNode, type SimEdge } from "~/lib/graph/sim";
+import { useI18n } from "~/i18n";
 
 export interface HoverInfo {
   screenX: number;
@@ -284,6 +285,7 @@ export function LandingGraph(props: {
 }
 
 export function NodeTooltip(props: { info: HoverInfo }) {
+  const { t } = useI18n();
   const topic = createMemo(() =>
     props.info.node.slug ? getTopicBySlug(props.info.node.slug) : undefined
   );
@@ -320,33 +322,29 @@ export function NodeTooltip(props: { info: HoverInfo }) {
         </span>
       </div>
       <Show when={topic()}>
-        {(t) => (
+        {(topicData) => (
           <>
             <p class="text-xs text-white/45 leading-snug mb-2">
-              {t().tagline}
+              {topicData().tagline}
             </p>
-            <div class="flex items-center gap-3 pt-2 border-t border-white/[0.07]">
-              <span class="text-xs text-white/30">
-                <span class="text-emerald-400 font-semibold">
-                  {t().resourceCount}
-                </span>{" "}
-                resources
-              </span>
-              <span class="text-xs text-white/30">
-                <span class="text-white/60 font-semibold">
-                  {(t().learnerCount / 1000).toFixed(1)}k
-                </span>{" "}
-                learners
-              </span>
-            </div>
+            <Show when={topicData().resources.length > 0}>
+              <div class="flex items-center gap-3 pt-2 border-t border-white/[0.07]">
+                <span class="text-xs text-white/30">
+                  <span class="text-emerald-400 font-semibold">
+                    {topicData().resources.length}
+                  </span>{" "}
+                  {t("common.resources")}
+                </span>
+              </div>
+            </Show>
           </>
         )}
       </Show>
       <Show when={!topic() && !props.info.node.slug}>
-        <p class="text-xs text-white/30 leading-snug">Related concept</p>
+        <p class="text-xs text-white/30 leading-snug">{t("home.relatedConcept")}</p>
       </Show>
       <Show when={props.info.node.slug}>
-        <p class="text-[10px] text-white/20 mt-2">click to explore →</p>
+        <p class="text-[10px] text-white/20 mt-2">{t("home.clickToExplore")} →</p>
       </Show>
     </div>
   );

@@ -9,6 +9,7 @@ import {
 import { useNavigate } from "@solidjs/router";
 import clsx from "clsx";
 import { searchTopics, ALL_TOPICS } from "~/lib/topics";
+import { useI18n } from "~/i18n";
 
 interface SearchBarProps {
   initialValue?: string;
@@ -19,6 +20,7 @@ interface SearchBarProps {
 
 export function SearchBar(props: SearchBarProps) {
   const navigate = useNavigate();
+  const { t } = useI18n();
   const [query, setQuery] = createSignal(props.initialValue ?? "");
   const [focused, setFocused] = createSignal(false);
   const [activeIndex, setActiveIndex] = createSignal(-1);
@@ -121,8 +123,8 @@ export function SearchBar(props: SearchBarProps) {
         <input
           ref={inputRef}
           type="search"
-          aria-label={props.placeholder ?? "Search philosophy topics"}
-          placeholder={props.placeholder ?? "Search any topic — Stoicism, Ethics, Logic…"}
+          aria-label={props.placeholder ?? t("search.ariaLabel")}
+          placeholder={props.placeholder ?? t("search.placeholder")}
           autofocus={props.autofocus}
           value={query()}
           onInput={(e) => {
@@ -149,7 +151,7 @@ export function SearchBar(props: SearchBarProps) {
         <Show when={query().length > 0}>
           <button
             type="button"
-            aria-label="Clear search"
+            aria-label={t("search.clearAria")}
             onClick={() => {
               setQuery("");
               setFocused(false);
@@ -172,7 +174,7 @@ export function SearchBar(props: SearchBarProps) {
         <Show when={!isHero()}>
           <button
             type="button"
-            aria-label="Search"
+            aria-label={t("search.searchAria")}
             onClick={() => handleSubmit()}
             class={clsx(
               "flex-shrink-0 h-7 px-3 rounded-pill text-xs font-semibold",
@@ -181,7 +183,7 @@ export function SearchBar(props: SearchBarProps) {
               "focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-1"
             )}
           >
-            Go
+            {t("search.go")}
           </button>
         </Show>
       </div>
@@ -232,7 +234,9 @@ export function SearchBar(props: SearchBarProps) {
                   </span>
                 </span>
                 <span class="text-xs text-brand-muted flex-shrink-0">
-                  {topic.resourceCount} resources
+                  {topic.resources.length > 0
+                    ? `${topic.resources.length} ${t("common.resources")}`
+                    : topic.category}
                 </span>
               </button>
             )}
@@ -241,7 +245,7 @@ export function SearchBar(props: SearchBarProps) {
           {/* All results hint */}
           <div class="px-4 py-2 bg-brand-chip/50 border-t border-brand-border/50">
             <span class="text-xs text-brand-muted">
-              Press <kbd class="font-mono bg-brand-border/60 px-1 rounded text-brand-text">↵</kbd> to explore
+              {t("search.pressEnter")}
             </span>
           </div>
         </div>

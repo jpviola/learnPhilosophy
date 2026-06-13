@@ -1,27 +1,39 @@
 import { A } from "@solidjs/router";
 import clsx from "clsx";
 import { Container } from "./Container";
-
-const links = {
-  Learn: [
-    { label: "All Topics", href: "/" },
-    { label: "Philosophy", href: "/topic/ethics" },
-    { label: "Logic", href: "/topic/logic" },
-    { label: "Existentialism", href: "/topic/existentialism" },
-  ],
-  Explore: [
-    { label: "Learning Paths", href: "/" },
-    { label: "Resources", href: "/" },
-    { label: "Knowledge Map", href: "/" },
-  ],
-  About: [
-    { label: "About", href: "/" },
-    { label: "Open Source", href: "/" },
-    { label: "Contact", href: "/" },
-  ],
-};
+import { useI18n } from "~/i18n";
 
 export function Footer() {
+  const { t } = useI18n();
+
+  const sections = [
+    {
+      title: t("footer.learn"),
+      items: [
+        { label: t("footer.allTopics"), href: "/" },
+        { label: t("footer.philosophy"), href: "/topic/ethics" },
+        { label: t("footer.logic"), href: "/topic/logic" },
+        { label: t("footer.existentialism"), href: "/topic/existentialism" },
+      ],
+    },
+    {
+      title: t("footer.explore"),
+      items: [
+        { label: t("footer.learningPaths"), href: "/" },
+        { label: t("footer.resources"), href: "/" },
+        { label: t("footer.knowledgeMap"), href: "/" },
+      ],
+    },
+    {
+      title: t("footer.about"),
+      items: [
+        { label: t("footer.aboutLink"), href: "/" },
+        { label: t("footer.openSource"), href: "/" },
+        { label: t("footer.contact"), href: "/" },
+      ],
+    },
+  ];
+
   return (
     <footer class="border-t border-brand-border bg-brand-bg/60 mt-auto">
       <Container width="wide">
@@ -44,18 +56,18 @@ export function Footer() {
               </span>
             </A>
             <p class="text-sm text-brand-muted leading-relaxed max-w-[200px]">
-              Explore ideas, discover thinkers, and build your own path through philosophy.
+              {t("footer.tagline")}
             </p>
           </div>
 
           {/* Link columns */}
-          {Object.entries(links).map(([section, items]) => (
+          {sections.map((section) => (
             <div>
               <h3 class="text-xs font-semibold uppercase tracking-wider text-brand-muted mb-3">
-                {section}
+                {section.title}
               </h3>
               <ul class="space-y-2">
-                {items.map((link) => (
+                {section.items.map((link) => (
                   <li>
                     <A
                       href={link.href}
@@ -77,20 +89,20 @@ export function Footer() {
         {/* Bottom bar */}
         <div class="border-t border-brand-border/60 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p class="text-xs text-brand-muted">
-            &copy; {new Date().getFullYear()} LearnPhilosophy. Open source &amp; free to use.
+            {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
           <div class="flex items-center gap-4">
             <a
               href="/"
               class="text-xs text-brand-muted hover:text-brand-text transition-colors duration-fast"
             >
-              Privacy
+              {t("footer.privacy")}
             </a>
             <a
               href="/"
               class="text-xs text-brand-muted hover:text-brand-text transition-colors duration-fast"
             >
-              Terms
+              {t("footer.terms")}
             </a>
             <a
               href="https://github.com"
