@@ -84,6 +84,18 @@ Every `/api/ask` request logs one structured JSON line (duration, provider,
 estimated tokens + USD cost, whether retrieval fired) to stdout. See
 `src/lib/observability/`.
 
+### Knowledge base (compile sources into topics)
+
+Drop sources into `raw/`, compile them into topics with the `knowledge-compiler`
+agent, then regenerate the master index + health report:
+
+```bash
+npm run knowledge   # writes src/content/topics/_index.md + outputs/health-check-*.md
+```
+
+See [docs/knowledge-base.md](docs/knowledge-base.md) for the full
+compiled-knowledge-base flow (`raw/` → topics → ontology + graph + tutor).
+
 ### Architecture
 
 See [docs/architecture.md](docs/architecture.md) for the full request flow and

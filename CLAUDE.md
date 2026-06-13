@@ -32,6 +32,15 @@ composable layers — keep it that way:
   listed resources; do not reintroduce invented `learnerCount` figures in the UI.
 - Topic content is markdown in `src/content/topics/`; see `_template.md`.
 
+## Compiled knowledge base
+
+Sources live in `raw/`; the `knowledge-compiler` agent (`.claude/agents/`) compiles
+them into topics in `src/content/topics/` (which feed the ontology + graph + tutor
+RAG). `npm run knowledge` regenerates the master index `src/content/topics/_index.md`
+(skipped by the content loader) and writes `outputs/health-check-*.md` flagging
+broken `relatedTopics`, orphans, and missing frontmatter. Run it after topic
+changes and fix what it flags. See `docs/knowledge-base.md`.
+
 ## Roadmap context
 
 The project follows a 9-layer production-AI plan. Done: Phase 0 (modular pipeline,

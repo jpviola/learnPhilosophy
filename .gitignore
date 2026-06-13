@@ -1,6 +1,14 @@
 node_modules
 .output
 .vinxi
-.claude
 package-lock.json
 socratic_learning_hub/
+
+# Local Claude config is private; version the shareable knowledge-base tooling.
+.claude/*
+!.claude/agents/
+!.claude/rules/
+
+# outputs/ holds generated deliverables; keep the folder, ignore its contents.
+outputs/*
+!outputs/.gitkeep
