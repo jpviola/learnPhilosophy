@@ -2,8 +2,27 @@ import type { APIEvent } from "@solidjs/start/server";
 import { runAskPipeline } from "~/lib/agent/pipeline";
 import { guardRequest, rateLimit, clientKey } from "~/lib/security/input-guard";
 import { startTrace } from "~/lib/observability/tracer";
-import { resolveLocale } from "~/i18n/locale";
+import { classifyIntent } from "~/lib/agent/router";
+import { dedupeActions, type TutorAction } from "~/lib/agent/tools/registry";
+import { serverT } from "~/i18n/server";
+import { resolveLocale, DEFAULT_LOCALE } from "~/i18n/locale";
 import type { AskRequest } from "~/lib/agent/types";
+
+function textStream(text: string): ReadableStream<Uint8Array> {
+  const encoder = new TextEncoder();
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(encoder.encode(text));
+      controller.close();
+    },
+  });
+}
+
+const STREAM_HEADERS: Record<string, string> = {
+  "Content-Type": "text/plain; charset=utf-8",
+  "Transfer-Encoding": "chunked",
+  "X-Content-Type-Options": "nosniff",
+};
 
 /** Estimates the characters sent to the model, for cost/observability. */
 function inputCharCount(req: AskRequest): number {
@@ -54,9 +73,23 @@ export async function POST(event: APIEvent) {
 
   const req = body as AskRequest;
   req.locale = resolveLocale(req.locale);
+  const locale = req.locale ?? DEFAULT_LOCALE;
 
   const trace = startTrace("ask");
   const inputChars = inputCharCount(req);
+
+  // Query understanding: greetings get an instant localized reply (no LLM call);
+  // an explicit "open X" surfaces that topic as a navigation action.
+  const route = classifyIntent(req.question);
+  if (route.intent === "greeting") {
+    const reply = serverT(locale, "chat.greetingReply");
+    trace.end({ status: "ok", provider: "router", locale, inputChars, outputChars: reply.length });
+    return new Response(textStream(reply), { headers: STREAM_HEADERS });
+  }
+  const routeActions: TutorAction[] =
+    route.intent === "navigate" && route.topicSlug
+      ? [{ type: "topic", slug: route.topicSlug, name: route.topicName }]
+      : [];
 
   try {
     const { stream, provider, retrieved, actions } = await runAskPipeline(req);
@@ -84,14 +117,12 @@ export async function POST(event: APIEvent) {
       })
     );
 
-    const headers: Record<string, string> = {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Transfer-Encoding": "chunked",
-      "X-Content-Type-Options": "nosniff",
-    };
     // Tutor's navigation actions (topics/path) travel in a header, URI-encoded.
-    if (actions.length > 0) {
-      headers["X-Tutor-Actions"] = encodeURIComponent(JSON.stringify(actions));
+    // Router-detected navigation is merged in front of any tool-produced actions.
+    const allActions = dedupeActions([...routeActions, ...actions]);
+    const headers: Record<string, string> = { ...STREAM_HEADERS };
+    if (allActions.length > 0) {
+      headers["X-Tutor-Actions"] = encodeURIComponent(JSON.stringify(allActions));
     }
 
     return new Response(counted, { headers });

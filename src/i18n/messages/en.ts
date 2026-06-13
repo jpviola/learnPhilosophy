@@ -95,6 +95,8 @@ const en: Messages = {
     generalTopic: "Philosophy",
     generalDescription:
       "A general introduction to the major branches and thinkers of philosophy.",
+    greetingReply:
+      "Hi! I'm your philosophy tutor. Ask me about any idea, thinker, or school of thought — or tell me what interests you and I'll build a learning path.",
   },
   content: {
     aiTranslated: "AI-translated",

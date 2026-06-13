@@ -1,6 +1,7 @@
 import { openProviderStream } from "~/lib/llm/provider";
 import { createThinkFilter } from "~/lib/security/output-filter";
-import { retrieveContext } from "~/lib/retrieval";
+import { retrieveContextAsync } from "~/lib/retrieval";
+import { rewriteForRetrieval } from "./query-rewriter";
 import { runAgenticTurn } from "./agentic";
 import type { TutorAction } from "./tools/registry";
 import type { AskRequest } from "./types";
@@ -31,7 +32,10 @@ const RETRIEVAL_THRESHOLD = 1500;
 export async function runAskPipeline(req: AskRequest): Promise<PipelineResult> {
   let retrieved = false;
   if (req.topicBody && req.topicBody.length > RETRIEVAL_THRESHOLD) {
-    const focused = retrieveContext(req.topicBody, req.question, 4);
+    // Rewrite the query (anaphora) for retrieval recall, then select passages
+    // (semantic if embeddings are configured, lexical otherwise).
+    const retrievalQuery = rewriteForRetrieval(req.question, req.history);
+    const focused = await retrieveContextAsync(req.topicBody, retrievalQuery, 4);
     if (focused) {
       req = { ...req, topicBody: focused };
       retrieved = true;

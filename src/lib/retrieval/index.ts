@@ -130,3 +130,36 @@ export function retrieveContext(body: string, query: string, k = 4): string {
     .map((c) => c.text)
     .join("\n\n");
 }
+
+/**
+ * Semantic retrieval when an embedding provider is configured, otherwise the
+ * lexical default. Same contract as `retrieveContext`; safe to await everywhere.
+ */
+export async function retrieveContextAsync(
+  body: string,
+  query: string,
+  k = 4
+): Promise<string> {
+  const { embeddingsEnabled, embedMany, embedOne, cosine } = await import("./embeddings");
+  if (!embeddingsEnabled()) return retrieveContext(body, query, k);
+
+  try {
+    const chunks = chunkMarkdown(body);
+    if (chunks.length <= k) return chunks.map((c) => c.text).join("\n\n");
+
+    const [queryVec, chunkVecs] = await Promise.all([
+      embedOne(query),
+      embedMany(chunks.map((c) => c.text)),
+    ]);
+
+    return chunks
+      .map((c, i) => ({ c, score: cosine(queryVec, chunkVecs[i]) }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, k)
+      .sort((a, b) => a.c.index - b.c.index)
+      .map((x) => x.c.text)
+      .join("\n\n");
+  } catch {
+    return retrieveContext(body, query, k);
+  }
+}

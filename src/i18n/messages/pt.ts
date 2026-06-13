@@ -95,6 +95,8 @@ const pt: Messages = {
     generalTopic: "Filosofia",
     generalDescription:
       "Uma introdução geral aos grandes ramos e pensadores da filosofia.",
+    greetingReply:
+      "Olá! Sou seu tutor de filosofia. Pergunte sobre qualquer ideia, pensador ou corrente — ou me diga o que te interessa e eu monto uma trilha de aprendizagem.",
   },
   content: {
     aiTranslated: "Traduzido por IA",

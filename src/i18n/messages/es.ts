@@ -94,6 +94,8 @@ const es = {
     generalTopic: "Filosofía",
     generalDescription:
       "Una introducción general a las grandes ramas y pensadores de la filosofía.",
+    greetingReply:
+      "¡Hola! Soy tu tutor de filosofía. Preguntame sobre cualquier idea, pensador o corriente — o decime qué te interesa y te armo una ruta de aprendizaje.",
   },
   content: {
     aiTranslated: "Traducido por IA",

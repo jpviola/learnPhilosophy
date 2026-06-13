@@ -38,6 +38,7 @@ Set **at least one** provider (see `.env.example`):
 |---|---|
 | `NEBIUS_API_KEY` | Nebius Token Factory key (primary, cheapest). |
 | `NEBIUS_MODEL` | Override model. Default: `MiniMaxAI/MiniMax-M2.5-fast` (non-reasoning). |
+| `NEBIUS_EMBED_MODEL` | Optional. Enables semantic (embedding) retrieval; lexical if unset. |
 | `ANTHROPIC_API_KEY` | Anthropic Claude (fallback). |
 | `OPENSPACE_URL` | OpenSpace MCP endpoint (skill caching). |
 
@@ -72,11 +73,12 @@ It is picked up automatically.
 retrieval-grounding eval needs no LLM key:
 
 ```bash
-npm run dev        # in one terminal
-npm run eval       # in another — exits non-zero below threshold
+npm run dev            # in one terminal
+npm run eval           # retrieval grounding (no key, CI-safe)
+npm run eval -- --live # full pipeline + LLM judge (needs a provider key)
 ```
 
-`EVALS.md` keeps the original manual answer-quality rubric for live review.
+`EVALS.md` keeps the original manual answer-quality rubric for reference.
 
 ### Observability
 

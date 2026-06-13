@@ -27,12 +27,12 @@ lib/agent/pipeline.ts       orchestration
 
 | Reference layer | Here | Status |
 |---|---|---|
-| Query understanding | locale resolve; (router/rewriter planned) | partial |
-| Retrieval | `lib/retrieval` — lexical TF-IDF over topic passages | lexical (embeddings = future) |
+| Query understanding | locale resolve + `agent/router` (intent) + `agent/query-rewriter` (anaphora) | done |
+| Retrieval | `lib/retrieval` — lexical TF-IDF, or semantic embeddings when configured | done |
 | Prompt management | `lib/prompts/templates` | done |
 | Hallucination control | grounding via topic body + ontology; traceability instruction | partial |
 | Security | `lib/security/{input-guard,output-filter}` | done |
-| Evaluation | `evals/golden.json` + `/api/eval` + `npm run eval` | retrieval-grounding |
+| Evaluation | `evals/golden.json` + `/api/eval` (grounding + `?mode=live` LLM-judge) | done |
 | Monitoring | `lib/observability/tracer` (structured JSON logs) | done |
 | Cost | `lib/observability/cost` (token + USD estimate) | done |
 | Agent structure | `lib/agent/*`, levels + Socratic mode, learner memory | done |
@@ -56,21 +56,32 @@ across up to a few rounds, then streams its final answer. Tool calls also produc
 Works on the Nebius (OpenAI-compatible) and Anthropic providers; falls back to a
 plain answer if the agentic loop fails.
 
+## Query understanding
+
+Before generating, the route runs `agent/router.ts` (deterministic intent): a
+greeting gets an instant localized reply with **no LLM call**; an explicit
+"open X" surfaces that topic as a navigation action. The pipeline runs
+`agent/query-rewriter.ts`, which expands short follow-up questions (anaphora like
+"¿y él?") with the last substantive turn — for retrieval only, never changing the
+question shown to the model.
+
 ## Retrieval
 
 `lib/retrieval/index.ts` chunks a topic's markdown into ~600-char passages and
-ranks them against the question with TF-IDF cosine (IDF computed within the
-document) plus a phrase-match boost. The pipeline only invokes it when the body
-exceeds `RETRIEVAL_THRESHOLD` (1500 chars); smaller bodies pass through whole.
-The `retrieve` contract is the seam where embedding-based semantic search can be
-dropped in later without touching the pipeline.
+ranks them against the question. By default it uses lexical TF-IDF cosine (IDF
+within the document) plus a phrase boost. When `NEBIUS_EMBED_MODEL` is set,
+`retrieveContextAsync` ranks by embedding cosine similarity instead
+(`lib/retrieval/embeddings.ts`, cached per chunk), falling back to lexical on any
+error. The pipeline only retrieves when the body exceeds `RETRIEVAL_THRESHOLD`
+(1500 chars). Same `retrieve` contract either way.
 
 ## Evaluation
 
-`evals/golden.json` holds questions with expected key terms. `/api/eval` (dev
-only) checks that retrieval surfaces those terms — no LLM key needed, CI-friendly.
-`npm run eval` runs it against a dev server and exits non-zero below threshold.
-A live answer-quality mode (LLM-judge) is a future addition.
+`/api/eval` (dev only) has two modes. Default = **retrieval grounding** (no key):
+checks the retrieval layer surfaces the golden key terms. `?mode=live` runs the
+full pipeline per golden question and grades the answer with an **LLM judge**
+(`lib/evals/judge.ts`, needs a provider key). `npm run eval` runs grounding;
+`npm run eval -- --live` runs the judge.
 
 ## Observability
 

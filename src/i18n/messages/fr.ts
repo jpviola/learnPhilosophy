@@ -95,6 +95,8 @@ const fr: Messages = {
     generalTopic: "Philosophie",
     generalDescription:
       "Une introduction générale aux grandes branches et penseurs de la philosophie.",
+    greetingReply:
+      "Bonjour ! Je suis votre tuteur de philosophie. Posez-moi une question sur n'importe quelle idée, penseur ou courant — ou dites-moi ce qui vous intéresse et je vous construis un parcours d'apprentissage.",
   },
   content: {
     aiTranslated: "Traduit par IA",
