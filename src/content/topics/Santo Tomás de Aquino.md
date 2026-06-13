@@ -13,6 +13,9 @@ relatedTopics:
   - existencia-de-dios
   - esencia-de-dios
   - alberto-magno
+  - tomas-de-aquino
+  - la-personalidad-de-santo-tomas-de-aquino
+  - sistematizacion-teologica
 ---
 
 # Santo Tomás de Aquino

@@ -11,6 +11,7 @@ relatedTopics:
   - de-anima
   - nutricion-y-crecimiento
   - potencias-del-alma
+  - la-relacion-entre-el-alma-y-el-cuerpo
 ---
 
 # Sustancia del Alma

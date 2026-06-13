@@ -1,3 +1,23 @@
+---
+id: la-personalidad-de-santo-tomas-de-aquino
+name: La personalidad de Santo Tomás de Aquino
+tagline: El carácter intelectual de Aquino y su empeño en reconciliar fe y razón
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - escolástica
+  - aristotelismo
+  - biografía
+relatedTopics:
+  - tomas-de-aquino
+  - santo-tomas-de-aquino
+  - el-sistema-de-santo-tomas-de-aquino
+  - sistematizacion-teologica
+  - existencia-de-dios
+  - aristoteles
+lang: es
+---
+
 # La personalidad de Santo Tomás de Aquino
 
 **La personalidad de Santo Tomás de Aquino**

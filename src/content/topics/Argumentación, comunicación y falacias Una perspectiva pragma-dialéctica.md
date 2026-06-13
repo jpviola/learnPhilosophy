@@ -1,3 +1,23 @@
+---
+id: argumentacion-comunicacion-y-falacias-una-perspectiva-pragma-dialectica
+name: Argumentación, comunicación y falacias Una perspectiva pragma-dialéctica
+tagline: La obra de van Eemeren y Grootendorst que integra argumentación, comunicación y falacias desde la pragma-dialéctica
+category: Logic
+color: "#8B5CF6"
+tags:
+  - pragma-dialéctica
+  - argumentación
+  - falacias
+relatedTopics:
+  - pragma-dialectica
+  - argumentacion
+  - comunicacion
+  - falacia-logica
+  - austin
+  - searle
+lang: es
+---
+
 # Argumentación, comunicación y falacias: Una perspectiva pragma-dialéctica
 
 **Argumentación, comunicación y falacias: Una perspectiva pragma-dialéctica**

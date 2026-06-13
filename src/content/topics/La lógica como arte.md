@@ -1,3 +1,24 @@
+---
+id: la-logica-como-arte
+name: La lógica como arte
+tagline: La perspectiva que entiende la lógica como una habilidad creativa para razonar y comunicar
+category: Logic
+color: "#8B5CF6"
+tags:
+  - razonamiento
+  - argumentación
+  - aristotelismo
+relatedTopics:
+  - arte-de-la-logica
+  - la-logica
+  - la-logica-como-ciencia
+  - ciencia-de-la-logica
+  - falacias-logicas-las-59-falacias-logicas-mas-poderosas
+  - aristoteles
+  - logic
+lang: es
+---
+
 # La lógica como arte
 
 **La lógica como arte**

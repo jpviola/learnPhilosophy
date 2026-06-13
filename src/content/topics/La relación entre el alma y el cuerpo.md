@@ -1,3 +1,24 @@
+---
+id: la-relacion-entre-el-alma-y-el-cuerpo
+name: La relación entre el alma y el cuerpo
+tagline: La tesis hilemórfica de Aristóteles según la cual el alma es la forma y actualidad del cuerpo
+category: Ancient Philosophy
+color: "#4F46E5"
+tags:
+  - aristóteles
+  - psicología
+  - hilemorfismo
+relatedTopics:
+  - de-anima
+  - la-naturaleza-del-alma
+  - sustancia-del-alma
+  - potencias-del-alma
+  - nutricion-y-crecimiento
+  - platon
+  - democrito
+lang: es
+---
+
 # La relación entre el alma y el cuerpo
 
 **La relación entre el alma y el cuerpo en De Anima**

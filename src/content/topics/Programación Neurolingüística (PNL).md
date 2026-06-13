@@ -1,3 +1,22 @@
+---
+id: programacion-neurolinguistica-pnl
+name: Programación Neurolingüística (PNL)
+tagline: Enfoque de desarrollo personal cuestionado como pseudociencia por su falta de fundamento empírico
+category: Applied Philosophy
+color: "#10B981"
+tags:
+  - pseudociencia
+  - pensamiento-crítico
+  - falacias
+relatedTopics:
+  - falacias-logicas-las-59-falacias-logicas-mas-poderosas
+  - falacia-logica
+  - argumento-inductivo
+  - argumento-deductivo
+  - logica
+lang: es
+---
+
 # Programación Neurolingüística (PNL)
 
 **Programación Neurolingüística (PNL)**

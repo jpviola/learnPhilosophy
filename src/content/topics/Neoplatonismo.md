@@ -1,3 +1,25 @@
+---
+id: neoplatonismo
+name: Neoplatonismo
+tagline: La corriente mística iniciada por Plotino que reinterpretó a Platón e influyó en el pensamiento medieval
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - platonismo
+  - mística
+  - metafísica
+relatedTopics:
+  - platon
+  - agustin-de-hipona
+  - la-concepcion-de-dios-en-el-occidente-medieval
+  - por-las-rutas-medievales-del-saber
+  - universales
+  - razon-y-fe
+  - sistematizacion-teologica
+  - literatura-religiosa-medieval-en-centroeuropa
+lang: es
+---
+
 # Neoplatonismo
 
 **Neoplatonismo**

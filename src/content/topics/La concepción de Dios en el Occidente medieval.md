@@ -1,3 +1,24 @@
+---
+id: la-concepcion-de-dios-en-el-occidente-medieval
+name: La concepción de Dios en el Occidente medieval
+tagline: La idea de Dios forjada por la síntesis de la fe cristiana y la filosofía griega en la Edad Media
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - teología
+  - monoteísmo
+  - metafísica
+relatedTopics:
+  - el-dios-de-la-edad-media
+  - agustin-de-hipona
+  - neoplatonismo
+  - monoteismo
+  - el-paso-al-monoteismo
+  - iconografia
+  - aristoteles
+lang: es
+---
+
 # La concepción de Dios en el Occidente medieval
 
 **La concepción de Dios en el Occidente medieval**

@@ -1,3 +1,24 @@
+---
+id: tomas-de-aquino
+name: Tomás de Aquino
+tagline: El teólogo dominico que buscó la síntesis entre la fe cristiana y la razón aristotélica
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - escolástica
+  - teología
+  - aristotelismo
+relatedTopics:
+  - santo-tomas-de-aquino
+  - la-personalidad-de-santo-tomas-de-aquino
+  - sistematizacion-teologica
+  - el-sistema-de-santo-tomas-de-aquino
+  - razon-y-fe
+  - aristoteles
+  - san-anselmo
+lang: es
+---
+
 # Tomás de Aquino
 
 **Tomás de Aquino**

@@ -10,6 +10,8 @@ tags:
 relatedTopics:
   - platon
   - el-dios-de-la-edad-media
+  - neoplatonismo
+  - la-concepcion-de-dios-en-el-occidente-medieval
 ---
 
 # Agustín de Hipona

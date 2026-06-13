@@ -1,3 +1,24 @@
+---
+id: arte-de-la-logica
+name: Arte de la lógica
+tagline: El estudio sistemático de las reglas que rigen el razonar y el argumentar correctamente
+category: Logic
+color: "#8B5CF6"
+tags:
+  - razonamiento
+  - argumentación
+  - aristotelismo
+relatedTopics:
+  - la-logica
+  - la-logica-como-arte
+  - la-logica-como-ciencia
+  - ciencia-de-la-logica
+  - falacias-logicas-las-59-falacias-logicas-mas-poderosas
+  - aristoteles
+  - logic
+lang: es
+---
+
 # Arte de la lógica
 
 **Arte de la Lógica**

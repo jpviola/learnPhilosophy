@@ -1,3 +1,25 @@
+---
+id: sistematizacion-teologica
+name: Sistematización teológica
+tagline: El esfuerzo medieval por organizar el conocimiento teológico en un sistema racional coherente
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - escolástica
+  - teología
+  - razón-y-fe
+relatedTopics:
+  - tomas-de-aquino
+  - la-personalidad-de-santo-tomas-de-aquino
+  - por-las-rutas-medievales-del-saber
+  - razon-y-fe
+  - universales
+  - neoplatonismo
+  - literatura-religiosa-medieval-en-centroeuropa
+  - san-anselmo
+lang: es
+---
+
 # Sistematización teológica
 
 **Sistematización teológica**

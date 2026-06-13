@@ -1,3 +1,23 @@
+---
+id: falacias-logicas-las-59-falacias-logicas-mas-poderosas
+name: Falacias lógicas- Las 59 falacias lógicas más poderosas
+tagline: La obra de Steve Allen que cataloga las falacias lógicas más comunes para afinar el pensamiento crítico
+category: Logic
+color: "#8B5CF6"
+tags:
+  - falacias
+  - pensamiento-crítico
+  - argumentación
+relatedTopics:
+  - falacia-logica
+  - argumentacion
+  - logica
+  - arte-de-la-logica
+  - la-logica-como-arte
+  - programacion-neurolinguistica-pnl
+  - logic
+lang: es
+---
 
 **Resumen del Libro**
 ------------------

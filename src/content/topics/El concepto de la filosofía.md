@@ -1,3 +1,24 @@
+---
+id: el-concepto-de-la-filosofia-fundamentos
+name: El concepto de la filosofía (según Fundamentos de Filosofía)
+tagline: ¿Qué es la filosofía? Posiciones positivista, idealista y realista a partir de Millán Puelles
+category: Core Philosophy
+color: "#10B981"
+tags:
+  - concepto
+  - definición
+  - positivismo
+  - realismo
+relatedTopics:
+  - el-concepto-de-la-filosofia
+  - concepto-de-la-filosofia
+  - fundamentos-de-filosofia
+  - introduccion-a-la-filosofia
+  - definicion-nominal
+  - definicion-real
+lang: es
+---
+
 # El concepto de la filosofía
 ==========================
 

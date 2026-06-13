@@ -1,3 +1,23 @@
+---
+id: literatura-religiosa-medieval-en-centroeuropa
+name: Literatura religiosa medieval en Centroeuropa
+tagline: La producción escrita religiosa de la Edad Media centroeuropea, entre la teología escolástica y el neoplatonismo
+category: Medieval Philosophy
+color: "#F59E0B"
+tags:
+  - literatura
+  - teología
+  - escolástica
+relatedTopics:
+  - por-las-rutas-medievales-del-saber
+  - sistematizacion-teologica
+  - neoplatonismo
+  - razon-y-fe
+  - san-anselmo
+  - tomas-de-aquino
+lang: es
+---
+
 # Literatura religiosa medieval en Centroeuropa
 
 **Literatura religiosa medieval en Centroeuropa**

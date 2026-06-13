@@ -10,6 +10,7 @@ tags:
 relatedTopics:
   - logica
   - argumentacion
+  - falacias-logicas-las-59-falacias-logicas-mas-poderosas
 ---
 
 # Falacia lógica

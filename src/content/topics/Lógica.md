@@ -12,6 +12,8 @@ relatedTopics:
   - falacia-logica
   - argumento-deductivo
   - argumento-inductivo
+  - arte-de-la-logica
+  - la-logica-como-arte
 ---
 
 # Lógica
